@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">TicTacTwo</string>
+    <string name="settings_desc">Go to Settings</string>
+    <string name="onboarding_logo_desc">Go to Onboarding</string>
+    <string name="stats_desc">Go to Statistics</string>
 </resources>

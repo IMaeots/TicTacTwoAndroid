@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_horizontal_padding">24dp</dimen>
+    <dimen name="content_area_top_padding">32dp</dimen>
+    <dimen name="content_area_bottom_padding">16dp</dimen>
+    <dimen name="content_padding">16dp</dimen>
+    <dimen name="top_bar_item_length">48dp</dimen>
+    <dimen name="default_item_padding">8dp</dimen>
+</resources>

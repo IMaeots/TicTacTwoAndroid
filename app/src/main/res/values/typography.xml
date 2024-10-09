@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <style name="TextAppearance.App" parent="android:TextAppearance" />
+
+    <!-- Font weights -->
+
+    <style name="TextAppearance.App.Light">
+        <item name="android:fontFamily">@font/montserrat_light</item>
+    </style>
+
+    <style name="TextAppearance.App.Regular">
+        <item name="android:fontFamily">@font/montserrat_regular</item>
+    </style>
+
+    <style name="TextAppearance.App.Bold">
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+    </style>
+
+    <style name="TextAppearance.App.ExtraBold">
+        <item name="android:fontFamily">@font/montserrat_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.App.Medium">
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+    </style>
+
+
+    <!-- Headings -->
+
+    <style name="TextAppearance.App.H1" parent="TextAppearance.App.Medium">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextAppearance.App.H2" parent="TextAppearance.App.Regular">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="TextAppearance.App.H3" parent="TextAppearance.App.Medium">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextAppearance.App.H4" parent="TextAppearance.App.Light">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextAppearance.App.H5" parent="TextAppearance.App.Regular">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextAppearance.App.H6" parent="TextAppearance.App.Regular">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+
+    <!-- Body -->
+
+    <style name="TextAppearance.App.Body" parent="TextAppearance.App.Regular" />
+
+    <style name="TextAppearance.App.Body.Large">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.App.Body.Normal">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.App.ExtraBold.Normal">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+</resources>
