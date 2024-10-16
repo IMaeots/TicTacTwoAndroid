@@ -1,14 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/onboardingImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/onboardingTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_app_logo_foreground" />
+
     <TextView
+        android:id="@+id/onboardingTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:paddingTop="64dp"
+        android:layout_marginTop="@dimen/content_area_top_padding"
+        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
+        android:layout_marginBottom="@dimen/content_area_bottom_padding"
         android:textAppearance="@style/TextAppearance.App.ExtraBold.Normal"
-        android:text="Welcome to onboarding"/>
+        android:text="@string/onboarding_title_text"
+        app:layout_constraintTop_toBottomOf="@id/onboardingImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/gameButton"/>
+
+    <Button
+        android:id="@+id/gameButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start_game_button_text"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
+        app:layout_constraintTop_toBottomOf="@id/onboardingTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomSpace"/>
+
+    <Space
+        android:id="@+id/bottomSpace"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bottom_padding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

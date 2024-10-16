@@ -3,4 +3,11 @@
     <string name="settings_desc">Go to Settings</string>
     <string name="onboarding_logo_desc">Go to Onboarding</string>
     <string name="stats_desc">Go to Statistics</string>
+    <string name="reset_button_text">Reset Game</string>
+    <string name="game_status_players_turn">%d\'s turn</string>
+    <string name="start_game_button_text">Start Game</string>
+    <string name="onboarding_title_text">Welcome to Tic Tac Two! \nA fun twist on classic Tic Tac Toe.</string>
+    <string name="settings_title">Settings</string>
+    <string name="stats_title">Player Stats</string>
+    <string name="reset_stats_button_text">Reset Stats</string>
 </resources>

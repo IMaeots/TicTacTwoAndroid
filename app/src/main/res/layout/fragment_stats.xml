@@ -1,14 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/statsTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:paddingTop="64dp"
+        android:paddingTop="32dp"
         android:textAppearance="@style/TextAppearance.App.ExtraBold.Normal"
-        android:text="Welcome to Stats"/>
+        android:text="@string/stats_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/settingsFrame"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/content_area_top_padding"
+        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
+        android:layout_marginBottom="@dimen/content_area_bottom_padding"
+        app:layout_constraintTop_toBottomOf="@id/statsTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/resetStatsButton">
+
+        <TextView
+            android:id="@+id/wins"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wins: 0"
+            android:textAlignment="center"
+            android:paddingTop="16dp" />
+
+        <TextView
+            android:id="@+id/losses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Losses: 0"
+            android:textAlignment="center"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/draws"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Draws: 0"
+            android:textAlignment="center"
+            android:paddingTop="8dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/resetStatsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reset_stats_button_text"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
+        app:layout_constraintTop_toBottomOf="@id/settingsFrame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomSpace" />
+
+    <Space
+        android:id="@+id/bottomSpace"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bottom_padding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
