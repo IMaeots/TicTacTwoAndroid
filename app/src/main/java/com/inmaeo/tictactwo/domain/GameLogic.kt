@@ -1,7 +1,7 @@
 package com.inmaeo.tictactwo.domain
 
 class GameLogic(gameConfiguration: GameConfiguration) {
-    private val gameState: GameState
+    val gameState: GameState
 
     val boardDimX: Int
         get() = gameState.gameBoard.size
