@@ -10,11 +10,12 @@
         android:layout_height="0dp"
         android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
+        android:src="@drawable/ic_app_logo_foreground"
+        app:tint="@color/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/onboardingTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_app_logo_foreground" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/onboardingTitle"

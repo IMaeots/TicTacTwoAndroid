@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar
+<com.google.android.material.appbar.MaterialToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/top_bar_view"
@@ -7,53 +7,44 @@
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-    android:paddingVertical="@dimen/default_horizontal_padding"
     android:paddingStart="@dimen/content_area_top_padding"
     android:paddingEnd="@dimen/content_padding">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginVertical="@dimen/default_horizontal_padding"
+        android:orientation="vertical">
 
         <ImageButton
             android:id="@+id/settingsButton"
-            android:layout_width="@dimen/top_bar_item_length"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/top_bar_item_length"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_settings"
-            android:contentDescription="@string/settings_desc"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/onboardingButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="8dp"
             android:layout_marginBottom="@dimen/default_horizontal_padding"
-            android:padding="@dimen/default_item_padding"/>
+            android:contentDescription="@string/settings_desc" />
 
         <ImageButton
             android:id="@+id/onboardingButton"
             android:layout_width="@dimen/top_bar_item_length"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_app_logo_foreground"
-            android:contentDescription="@string/onboarding_logo_desc"
-            app:layout_constraintTop_toBottomOf="@+id/settingsButton"
-            app:layout_constraintBottom_toTopOf="@id/statsButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:padding="@dimen/default_item_padding"/>
+            android:layout_weight="1"
+            android:contentDescription="@string/onboarding_logo_desc" />
 
         <ImageButton
             android:id="@+id/statsButton"
-            android:layout_width="@dimen/top_bar_item_length"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/top_bar_item_length"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_stats"
-            android:contentDescription="@string/stats_desc"
-            app:layout_constraintTop_toBottomOf="@+id/onboardingButton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="8dp"
             android:layout_marginTop="@dimen/default_horizontal_padding"
-            android:padding="@dimen/default_item_padding"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.appcompat.widget.Toolbar>
+            android:contentDescription="@string/stats_desc" />
+
+    </LinearLayout>
+
+</com.google.android.material.appbar.MaterialToolbar>
