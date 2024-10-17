@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/statsTitle"
@@ -30,28 +31,28 @@
         app:layout_constraintBottom_toTopOf="@id/resetStatsButton">
 
         <TextView
-            android:id="@+id/wins"
+            android:id="@+id/winStat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Wins: 0"
             android:textAlignment="center"
-            android:paddingTop="16dp" />
+            android:paddingTop="16dp"
+            tools:text="Wins: 0"/>
 
         <TextView
-            android:id="@+id/losses"
+            android:id="@+id/lossStat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Losses: 0"
             android:textAlignment="center"
-            android:paddingTop="8dp" />
+            android:paddingTop="8dp"
+            tools:text="Losses: 0" />
 
         <TextView
-            android:id="@+id/draws"
+            android:id="@+id/drawsStat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Draws: 0"
             android:textAlignment="center"
-            android:paddingTop="8dp" />
+            android:paddingTop="8dp"
+            tools:text="Draws: 0" />
 
     </LinearLayout>
 

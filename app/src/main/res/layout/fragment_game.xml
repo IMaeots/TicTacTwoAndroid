@@ -36,6 +36,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/reset_button_text"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"
         android:layout_marginHorizontal="@dimen/default_horizontal_padding"
         app:layout_constraintBottom_toTopOf="@id/bottomSpace"
         app:layout_constraintEnd_toEndOf="parent"
