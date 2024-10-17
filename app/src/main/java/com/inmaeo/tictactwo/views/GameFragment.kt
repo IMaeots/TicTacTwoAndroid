@@ -79,7 +79,6 @@ class GameFragment : Fragment() {
                 rowSpec = GridLayout.spec(row, 1f)
                 columnSpec = GridLayout.spec(col, 1f)
             }
-            background = resources.getDrawable(R.drawable.button_background, null)
             textSize = 24f // Set text size
             setOnClickListener {
                 binding.gameStatusTextView.text = viewModel.onCellClick(row, col)
