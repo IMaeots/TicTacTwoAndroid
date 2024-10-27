@@ -19,42 +19,18 @@ data class GameConfiguration(
 )
 
 data class GameState(
-    var gameBoard: Array<Array<GamePiece>>,
     val gameConfiguration: GameConfiguration,
+    val gameBoard: List<List<GamePiece>>,
+    val gameOutcome: GameOutcome = GameOutcome.None,
     var nextMoveBy: GamePiece = GamePiece.Player1,
+    var gridX: Int = (gameConfiguration.boardSize - gameConfiguration.gridSize) / 2,
+    var gridY: Int= (gameConfiguration.boardSize - gameConfiguration.gridSize) / 2,
     var player1MarkersPlaced: Int = 0,
     var player2MarkersPlaced: Int = 0,
-    var gridX: Int = 0,
-    var gridY: Int = 0,
-    var moveCount: Int = 0
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    var moveCount: Int = 0,
+    var error: GameStateError? = null
+)
 
-        other as GameState
-
-        if (!gameBoard.contentDeepEquals(other.gameBoard)) return false
-        if (gameConfiguration != other.gameConfiguration) return false
-        if (nextMoveBy != other.nextMoveBy) return false
-        if (player1MarkersPlaced != other.player1MarkersPlaced) return false
-        if (player2MarkersPlaced != other.player2MarkersPlaced) return false
-        if (gridX != other.gridX) return false
-        if (gridY != other.gridY) return false
-        if (moveCount != other.moveCount) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = gameBoard.contentDeepHashCode()
-        result = 31 * result + gameConfiguration.hashCode()
-        result = 31 * result + nextMoveBy.hashCode()
-        result = 31 * result + player1MarkersPlaced
-        result = 31 * result + player2MarkersPlaced
-        result = 31 * result + gridX
-        result = 31 * result + gridY
-        result = 31 * result + moveCount
-        return result
-    }
+sealed interface GameStateError {
+    data object UnknownError : GameStateError
 }

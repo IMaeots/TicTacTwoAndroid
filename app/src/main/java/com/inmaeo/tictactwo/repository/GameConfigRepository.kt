@@ -7,10 +7,10 @@ class GameConfigRepository {
     fun getGameConfiguration(): GameConfiguration {
         return GameConfiguration(
             boardSize = 5,
-            gridSize = 5,
+            gridSize = 3,
             winCondition = 3,
-            numberOfMarkers = 3,
-            name = "TicTacToe"
+            numberOfMarkers = 5,
+            name = "TicTacTwo"
         )
     }
 }

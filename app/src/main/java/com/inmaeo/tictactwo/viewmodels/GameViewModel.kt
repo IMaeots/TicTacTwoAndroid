@@ -2,96 +2,102 @@ package com.inmaeo.tictactwo.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.inmaeo.tictactwo.domain.GameConfiguration
 import com.inmaeo.tictactwo.domain.GameLogic
 import com.inmaeo.tictactwo.domain.GamePiece
+import com.inmaeo.tictactwo.domain.GameState
+import com.inmaeo.tictactwo.domain.GameStateError
 import com.inmaeo.tictactwo.repository.GameConfigRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    private val gameConfigRepository: GameConfigRepository
+    gameConfigRepository: GameConfigRepository
 ) : ViewModel() {
-    private val _gameState = MutableSharedFlow<GameViewState>()
+
+    private val _gameState = MutableSharedFlow<GameState>(replay = 1)
     val gameState = _gameState.asSharedFlow()
 
-    var lastGameState: GameViewState? = null
-
-    private lateinit var gameLogic: GameLogic
-    private val gameConfig = GameConfiguration(
-        boardSize = 5,
-        gridSize = 3,
-        winCondition = 3,
-        numberOfMarkers = 3,
-        name = "Tic Tac Two"
-    )
+    private val gameLogic = GameLogic()
+    private val gameConfig = gameConfigRepository.getGameConfiguration()
 
     init {
-        resetGame()
+        viewModelScope.launch {
+            val initialState = GameState(
+                gameConfiguration = gameConfig,
+                gameBoard = MutableList(gameConfig.boardSize) { MutableList(gameConfig.boardSize) { GamePiece.Empty } }
+            )
+            _gameState.emit(initialState)
+        }
     }
 
-    fun onCellClick(row: Int, col: Int): String {
-        if (gameLogic.canPlaceMarker()) {
-            val placed = gameLogic.placeMarker(row, col)
-            return if (placed) {
-                // Check for win or draw and return the appropriate message
-                updateGameState()
-                return "All good"
-            } else {
-                return "not good"
+    fun onGameBoardAction(action: GameBoardAction) {
+        viewModelScope.launch {
+            val currentState = _gameState.first()
+            if (gameLogic.hasGameFinished(currentState)) return@launch
+
+            val updatedState: GameState?
+            when (action) {
+                is GameBoardAction.PlaceMarker -> {
+                    if (gameLogic.canPlaceMarker(currentState)) {
+                        updatedState = gameLogic.placeMarker(currentState, action.x, action.y)
+                        if (updatedState != null) {
+                            val gameOutcome = gameLogic.checkForGameEnd(updatedState)
+                            _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
+                        } else {
+                            _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+                        }
+                    } else {
+                        _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+                    }
+                }
+                is GameBoardAction.MoveMarker -> {
+                    if (gameLogic.canMoveThatMarker(currentState, action.oldX, action.oldY)) {
+                        updatedState = gameLogic.moveMarker(currentState, action.oldX, action.oldY, action.newX, action.newY)
+                        if (updatedState != null) {
+                            _gameState.emit(updatedState)
+                        } else {
+                            _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+                        }
+                    } else {
+                        _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+                    }
+                }
+                is GameBoardAction.MoveGrid -> {
+                    if (gameLogic.canMoveGrid(currentState)) {
+                        updatedState = gameLogic.moveGrid(currentState, action.direction)
+                        if (updatedState != null) {
+                            _gameState.emit(updatedState)
+                        } else {
+                            _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+                        }
+                    } else {
+                        _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+                    }
+                }
             }
         }
-        return "very bad"
     }
 
-
-    private fun updateGameState() {
-        lastGameState = GameViewState(
-            gameConfiguration = gameLogic.gameState.gameConfiguration,
-            gameBoard = gameLogic.getGameBoard(),
-            nextMoveBy = gameLogic.nextMoveBy,
-            gridX = gameLogic.gridX,
-            gridY = gameLogic.gridY,
-            player1MarkersPlaced = gameLogic.gameState.player1MarkersPlaced,
-            player2MarkersPlaced = gameLogic.gameState.player2MarkersPlaced,
-            moveCount = gameLogic.gameState.moveCount
-        )
-
+    fun resetGame()  {
         viewModelScope.launch {
-            _gameState.emit(
-                lastGameState!!
-            )
+            val initialGameState = gameLogic.resetGame(gameState.first())
+            _gameState.emit(initialGameState)
         }
     }
 
-    fun resetGame() {
-        gameLogic = GameLogic(gameConfig)
-
-        viewModelScope.launch {
-            _gameState.emit(
-                GameViewState(
-                    gameConfiguration = gameConfig,
-                    gameBoard = gameLogic.getGameBoard(),
-                    gridX = gameLogic.gridX,
-                    gridY = gameLogic.gridY,
-                    player1MarkersPlaced = 0,
-                    player2MarkersPlaced = 0,
-                    moveCount = 0
-                )
-            )
-        }
+    fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean {
+        return gameLogic.isButtonPartOfGrid(gameState, row, col)
     }
 }
 
+sealed interface GameBoardAction {
+    data class PlaceMarker(val x: Int, val y: Int): GameBoardAction
+    data class MoveMarker(val oldX: Int, val oldY: Int, val newX: Int, val newY: Int): GameBoardAction
+    data class MoveGrid(val direction: MoveGridDirection): GameBoardAction
+}
 
-data class GameViewState(
-    val gameConfiguration: GameConfiguration,
-    val nextMoveBy: GamePiece = GamePiece.Player1,
-    val gameBoard: Array<Array<GamePiece>>,
-    val gridX: Int,
-    val gridY: Int,
-    val player1MarkersPlaced: Int = 0,
-    val player2MarkersPlaced: Int = 0,
-    val moveCount: Int = 0
-)
+enum class MoveGridDirection {
+    LEFT, UP ,RIGHT, DOWN
+}

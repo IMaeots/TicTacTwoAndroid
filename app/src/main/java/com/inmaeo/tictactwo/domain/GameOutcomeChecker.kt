@@ -1,6 +1,6 @@
 package com.inmaeo.tictactwo.domain
 
-class GameOutcomeChecker(private val gameState: GameState) {
+class GameOutcomeChecker(gameState: GameState) {
     private val config = gameState.gameConfiguration
     private val gameBoard = gameState.gameBoard
     private val gridX = gameState.gridX
@@ -29,17 +29,16 @@ class GameOutcomeChecker(private val gameState: GameState) {
         val xLimit = gridX + config.gridSize - 1
         val yLimit = gridY + config.gridSize - 1
 
-        for (x in gridX..xLimit) {
-            for (y in gridY..yLimit) {
-                if (isWinningLine(x, y, player, direction)) {
-                    return true
-                }
+        return (gridX..xLimit).any { x ->
+            (gridY..yLimit).any { y ->
+                isWinningLine(x, xLimit, y, yLimit, player, direction)
             }
         }
-        return false
     }
 
-    private fun isWinningLine(startX: Int, startY: Int, player: GamePiece, direction: GameOutcomeCheckDirection): Boolean {
+    private fun isWinningLine(startX: Int, xLimit: Int, startY: Int, yLimit: Int, player: GamePiece, direction: GameOutcomeCheckDirection): Boolean {
+        if (!hasSpaceForWinCondition(startX, xLimit, startY, yLimit, direction)) return false
+
         try {
             for (i in 0 until config.winCondition) {
                 val currentPiece = when (direction) {
@@ -51,12 +50,22 @@ class GameOutcomeChecker(private val gameState: GameState) {
 
                 if (currentPiece != player) return false
             }
-        } catch (e: ArrayIndexOutOfBoundsException) {
+        } catch (e: IndexOutOfBoundsException) {
             return false
         }
 
         return true
     }
+
+    private fun hasSpaceForWinCondition(startX: Int, xLimit: Int, startY: Int, yLimit: Int, direction: GameOutcomeCheckDirection): Boolean =
+        when (direction) {
+            GameOutcomeCheckDirection.Vertical -> startY + config.winCondition - 1 <= yLimit
+            GameOutcomeCheckDirection.Horizontal -> startX + config.winCondition - 1 <= xLimit
+            GameOutcomeCheckDirection.DiagonalTopLeftToBottomRight ->
+                startX + config.winCondition - 1 <= xLimit && startY + config.winCondition - 1 <= yLimit
+            GameOutcomeCheckDirection.DiagonalBottomLeftToTopRight ->
+                startX + config.winCondition - 1 <= xLimit && startY - config.winCondition + 1 >= gridY
+        }
 }
 
 enum class GameOutcome {

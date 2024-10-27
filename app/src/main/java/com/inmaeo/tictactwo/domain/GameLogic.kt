@@ -1,42 +1,14 @@
 package com.inmaeo.tictactwo.domain
 
-class GameLogic(gameConfiguration: GameConfiguration) {
-    val gameState: GameState
+import com.inmaeo.tictactwo.viewmodels.MoveGridDirection
 
-    val boardDimX: Int
-        get() = gameState.gameBoard.size
-    val boardDimY: Int
-        get() = gameState.gameBoard[0].size
-    val gridSize: Int
-        get() = gameState.gameConfiguration.gridSize
-    val nextMoveBy: GamePiece
-        get() = gameState.nextMoveBy
-    val gridX: Int
-        get() = gameState.gridX
-    val gridY: Int
-        get() = gameState.gridY
+class GameLogic {
 
-    init {
-        val gameBoard = Array(gameConfiguration.boardSize) {
-            Array(gameConfiguration.boardSize) { GamePiece.Empty }
-        }
-        gameState = GameState(gameBoard, gameConfiguration)
-    }
+    fun checkForGameEnd(gameState: GameState): GameOutcome = GameOutcomeChecker(gameState).checkGameOutcome()
 
-    fun getGameConfigName(): String {
-        return gameState.gameConfiguration.name
-    }
+    fun hasGameFinished(gameState: GameState) = gameState.gameOutcome != GameOutcome.None
 
-    fun getGameBoard(): Array<Array<GamePiece>> {
-        return gameState.gameBoard.map { it.clone() }.toTypedArray()
-    }
-
-    fun checkForGameEnd(): GameOutcome {
-        val gameOutcomeChecker = GameOutcomeChecker(gameState)
-        return gameOutcomeChecker.checkGameOutcome()
-    }
-
-    fun canPlaceMarker(): Boolean {
+    fun canPlaceMarker(gameState: GameState): Boolean {
         return when (gameState.nextMoveBy) {
             GamePiece.Player1 -> gameState.player1MarkersPlaced < gameState.gameConfiguration.numberOfMarkers
             GamePiece.Player2 -> gameState.player2MarkersPlaced < gameState.gameConfiguration.numberOfMarkers
@@ -44,66 +16,90 @@ class GameLogic(gameConfiguration: GameConfiguration) {
         }
     }
 
-    fun placeMarker(x: Int, y: Int): Boolean {
-        if (gameState.gameBoard[x][y] != GamePiece.Empty) {
-            return false
+    fun placeMarker(gameState: GameState, x: Int, y: Int): GameState? {
+        val newBoard = gameState.gameBoard.map { it.toMutableList() }
+        if (x < 0 || y < 0 || x >= gameState.gameConfiguration.boardSize || y >= gameState.gameConfiguration.boardSize ||
+            newBoard[x][y] != GamePiece.Empty) {
+            return null
         }
+        newBoard[x][y] = gameState.nextMoveBy
 
-        gameState.gameBoard[x][y] = gameState.nextMoveBy
-
-        when (gameState.nextMoveBy) {
-            GamePiece.Player1 -> gameState.player1MarkersPlaced++
-            GamePiece.Player2 -> gameState.player2MarkersPlaced++
-            GamePiece.Empty -> throw IllegalArgumentException("Marker placement was tryied to be done by Empty GamePiece...")
-        }
-
-        moveMade()
-        return true
+        return gameState.copy(
+            gameBoard = newBoard.toList(),
+            player1MarkersPlaced = if (gameState.nextMoveBy == GamePiece.Player1) gameState.player1MarkersPlaced + 1 else gameState.player1MarkersPlaced,
+            player2MarkersPlaced = if (gameState.nextMoveBy == GamePiece.Player2) gameState.player2MarkersPlaced + 1 else gameState.player2MarkersPlaced,
+            nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1,
+            moveCount = gameState.moveCount + 1
+        )
     }
 
-    fun canMoveThatMarker(currentX: Int, currentY: Int): Boolean {
+    fun canMoveThatMarker(gameState: GameState, currentX: Int, currentY: Int): Boolean {
         return gameState.gameBoard[currentX][currentY] == gameState.nextMoveBy
     }
 
-    fun moveMarker(oldX: Int, oldY: Int, newX: Int, newY: Int): Boolean {
-        if (gameState.gameBoard[oldX][oldY] == gameState.nextMoveBy && gameState.gameBoard[newX][newY] == GamePiece.Empty) {
-            gameState.gameBoard[oldX][oldY] = GamePiece.Empty
-            gameState.gameBoard[newX][newY] = gameState.nextMoveBy
-            moveMade()
-            return true
+    fun moveMarker(gameState: GameState, oldX: Int, oldY: Int, newX: Int, newY: Int): GameState? {
+        if (oldX < 0 || oldY < 0 || newX < 0 || newY < 0 ||
+            oldX >= gameState.gameConfiguration.boardSize || oldY >= gameState.gameConfiguration.boardSize ||
+            newX >= gameState.gameConfiguration.boardSize || newY >= gameState.gameConfiguration.boardSize ||
+            gameState.gameBoard[oldX][oldY] != gameState.nextMoveBy || gameState.gameBoard[newX][newY] != GamePiece.Empty) {
+            return null
         }
-        return false
+
+        val newBoard = gameState.gameBoard.map { it.toMutableList() }
+        newBoard[oldX][oldY] = GamePiece.Empty
+        newBoard[newX][newY] = gameState.nextMoveBy
+
+        return gameState.copy(
+            gameBoard = newBoard,
+            nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1,
+            moveCount = gameState.moveCount + 1
+        )
     }
 
-    fun canMoveGrid(): Boolean {
-        return gameState.gridX >= 0 && gameState.gridY >= 0
+    fun canMoveGrid(gameState: GameState): Boolean {
+        return gameState.gridX >= 0 && gameState.gridY >= 0 &&
+                gameState.gridX + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize &&
+                gameState.gridY + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize
     }
 
-    fun moveGrid(newGridX: Int, newGridY: Int): Boolean {
+    fun moveGrid(gameState: GameState, direction: MoveGridDirection): GameState? {
+        val (gridX, gridY) = gameState.run {
+            when (direction) {
+                MoveGridDirection.LEFT -> gridX - 1 to gridY
+                MoveGridDirection.RIGHT -> gridX + 1 to gridY
+                MoveGridDirection.UP -> gridX to gridY - 1
+                MoveGridDirection.DOWN -> gridX to gridY + 1
+            }
+        }
+
         val gridSize = gameState.gameConfiguration.gridSize
         val boardSize = gameState.gameConfiguration.boardSize
+        if (gridX !in 0..(boardSize - gridSize) || gridY !in 0..(boardSize - gridSize)) return null
 
-        if (newGridX < 0 || newGridX + gridSize > boardSize || newGridY < 0 || newGridY + gridSize > boardSize) {
-            return false
-        }
-
-        gameState.gridX = newGridX
-        gameState.gridY = newGridY
-
-        moveMade()
-        return true
+        return gameState.copy(gridX = gridX, gridY = gridY)
     }
 
-    private fun moveMade() {
-        gameState.nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1
-        gameState.moveCount++
+    fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean {
+        val gridX = gameState.gridX
+        val gridY = gameState.gridY
+        val gridSize = gameState.gameConfiguration.gridSize
+
+        return row in gridX until (gridX + gridSize) && col in gridY until (gridY + gridSize)
     }
 
-    fun resetGame() {
+    fun resetGame(gameState: GameState): GameState {
         val boardSize = gameState.gameConfiguration.boardSize
-        gameState.gameBoard = Array(boardSize) { Array(boardSize) { GamePiece.Empty } }
-        gameState.nextMoveBy = GamePiece.Player1
-        gameState.player1MarkersPlaced = 0
-        gameState.player2MarkersPlaced = 0
+        val newBoard = MutableList(boardSize) { MutableList(boardSize) { GamePiece.Empty } }
+
+        return gameState.copy(
+            gameBoard = newBoard,
+            gameOutcome = GameOutcome.None,
+            nextMoveBy = GamePiece.Player1,
+            player1MarkersPlaced = 0,
+            player2MarkersPlaced = 0,
+            moveCount = 0,
+            gridX = (boardSize - gameState.gameConfiguration.gridSize) / 2,
+            gridY = (boardSize - gameState.gameConfiguration.gridSize) / 2
+        )
     }
 }
