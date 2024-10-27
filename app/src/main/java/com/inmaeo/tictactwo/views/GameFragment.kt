@@ -15,7 +15,6 @@ import com.inmaeo.tictactwo.databinding.FragmentGameBinding
 import com.inmaeo.tictactwo.domain.GameOutcome
 import com.inmaeo.tictactwo.domain.GamePiece
 import com.inmaeo.tictactwo.domain.GameState
-import com.inmaeo.tictactwo.viewmodels.GameBoardAction
 import com.inmaeo.tictactwo.viewmodels.GameViewModel
 import com.inmaeo.tictactwo.viewmodels.GameViewModelFactory
 import com.inmaeo.tictactwo.views.components.CustomButton
@@ -72,10 +71,6 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun handleGameButtonClick(row: Int, col: Int) {
-        viewModel.onGameBoardAction(action = GameBoardAction.PlaceMarker(row, col))
-    }
-
     private fun drawBoard(gameState: GameState) {
         if (gridLayout.childCount == 0) {
             initializeEmptyBoard(gameState)
@@ -88,6 +83,7 @@ class GameFragment : Fragment() {
 
             button.piece = gameState.gameBoard[row][col]
             button.isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
+            button.isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
         }
     }
 
@@ -99,13 +95,13 @@ class GameFragment : Fragment() {
 
         for (row in 0 until boardSize) {
             for (col in 0 until boardSize) {
-                val button = createButton(row, col, gameState)
+                val button = createInitialButton(row, col, gameState)
                 gridLayout.addView(button)
             }
         }
     }
 
-    private fun createButton(row: Int, col: Int, gameState: GameState): CustomButton {
+    private fun createInitialButton(row: Int, col: Int, gameState: GameState): CustomButton {
         return CustomButton(requireContext()).apply {
             layoutParams = GridLayout.LayoutParams().apply {
                 width = 0
@@ -113,10 +109,11 @@ class GameFragment : Fragment() {
                 rowSpec = GridLayout.spec(row, 1f)
                 columnSpec = GridLayout.spec(col, 1f)
             }
-            piece = GamePiece.Empty
+            piece = GamePiece.Empty // TODO: Modify in-case of starting from saved game.
             isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
+            isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
             setOnClickListener {
-                handleGameButtonClick(row, col)
+                viewModel.handleGameButtonClick(row, col)
             }
         }
     }

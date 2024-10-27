@@ -37,6 +37,10 @@ class GameLogic {
         return gameState.gameBoard[currentX][currentY] == gameState.nextMoveBy
     }
 
+    fun selectMarker(gameState: GameState, currentX: Int, currentY: Int) {
+        gameState.selectedMarker = LocationCoordinates(currentX, currentY)
+    }
+
     fun moveMarker(gameState: GameState, oldX: Int, oldY: Int, newX: Int, newY: Int): GameState? {
         if (oldX < 0 || oldY < 0 || newX < 0 || newY < 0 ||
             oldX >= gameState.gameConfiguration.boardSize || oldY >= gameState.gameConfiguration.boardSize ||
@@ -52,23 +56,24 @@ class GameLogic {
         return gameState.copy(
             gameBoard = newBoard,
             nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1,
-            moveCount = gameState.moveCount + 1
+            moveCount = gameState.moveCount + 1,
+            selectedMarker = null
         )
     }
 
     fun canMoveGrid(gameState: GameState): Boolean {
-        return gameState.gridX >= 0 && gameState.gridY >= 0 &&
-                gameState.gridX + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize &&
-                gameState.gridY + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize
+        return gameState.gridMainCorner.x >= 0 && gameState.gridMainCorner.y >= 0 &&
+                gameState.gridMainCorner.x + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize &&
+                gameState.gridMainCorner.y + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize
     }
 
     fun moveGrid(gameState: GameState, direction: MoveGridDirection): GameState? {
         val (gridX, gridY) = gameState.run {
             when (direction) {
-                MoveGridDirection.LEFT -> gridX - 1 to gridY
-                MoveGridDirection.RIGHT -> gridX + 1 to gridY
-                MoveGridDirection.UP -> gridX to gridY - 1
-                MoveGridDirection.DOWN -> gridX to gridY + 1
+                MoveGridDirection.LEFT -> gridMainCorner.x - 1 to gridMainCorner.y
+                MoveGridDirection.RIGHT -> gridMainCorner.x + 1 to gridMainCorner.y
+                MoveGridDirection.UP -> gridMainCorner.x to gridMainCorner.y - 1
+                MoveGridDirection.DOWN -> gridMainCorner.x to gridMainCorner.y + 1
             }
         }
 
@@ -76,15 +81,19 @@ class GameLogic {
         val boardSize = gameState.gameConfiguration.boardSize
         if (gridX !in 0..(boardSize - gridSize) || gridY !in 0..(boardSize - gridSize)) return null
 
-        return gameState.copy(gridX = gridX, gridY = gridY)
+        return gameState.copy(gridMainCorner = LocationCoordinates(gridX, gridY))
     }
 
     fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean {
-        val gridX = gameState.gridX
-        val gridY = gameState.gridY
+        val gridX = gameState.gridMainCorner.x
+        val gridY = gameState.gridMainCorner.y
         val gridSize = gameState.gameConfiguration.gridSize
 
         return row in gridX until (gridX + gridSize) && col in gridY until (gridY + gridSize)
+    }
+
+    fun isGamePieceSelected(gameState: GameState, row: Int, col: Int): Boolean {
+        return gameState.selectedMarker?.x == row && gameState.selectedMarker?.y == col
     }
 
     fun resetGame(gameState: GameState): GameState {
@@ -95,11 +104,13 @@ class GameLogic {
             gameBoard = newBoard,
             gameOutcome = GameOutcome.None,
             nextMoveBy = GamePiece.Player1,
+            gridMainCorner = LocationCoordinates(
+                x = (boardSize - gameState.gameConfiguration.gridSize) / 2,
+                y = (boardSize - gameState.gameConfiguration.gridSize) / 2
+            ),
             player1MarkersPlaced = 0,
             player2MarkersPlaced = 0,
-            moveCount = 0,
-            gridX = (boardSize - gameState.gameConfiguration.gridSize) / 2,
-            gridY = (boardSize - gameState.gameConfiguration.gridSize) / 2
+            moveCount = 0
         )
     }
 }

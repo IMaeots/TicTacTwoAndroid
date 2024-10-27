@@ -22,6 +22,10 @@ class GameViewModel(
     private val gameLogic = GameLogic()
     private val gameConfig = gameConfigRepository.getGameConfiguration()
 
+    fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean = gameLogic.isButtonPartOfGrid(gameState, row, col)
+
+    fun isGamePieceSelected(gameState: GameState, row: Int, col: Int): Boolean = gameLogic.isGamePieceSelected(gameState, row, col)
+
     init {
         viewModelScope.launch {
             val initialState = GameState(
@@ -32,7 +36,33 @@ class GameViewModel(
         }
     }
 
-    fun onGameBoardAction(action: GameBoardAction) {
+    fun resetGame()  {
+        viewModelScope.launch {
+            val initialGameState = gameLogic.resetGame(gameState.first())
+            _gameState.emit(initialGameState)
+        }
+    }
+
+    fun handleGameButtonClick(row: Int, col: Int) {
+        viewModelScope.launch {
+            val currentState = _gameState.first()
+            val selectedMarker = currentState.selectedMarker
+
+            if (currentState.gameBoard[row][col] != GamePiece.Empty) {
+                selectMarker(row, col)
+            } else if (selectedMarker != null) {
+                onGameBoardAction(
+                    action = GameBoardAction.MoveMarker(
+                        oldX = selectedMarker.x, oldY = selectedMarker.y, newX = row, newY = col
+                    )
+                )
+            } else {
+                onGameBoardAction(action = GameBoardAction.PlaceMarker(row, col))
+            }
+        }
+    }
+
+    private fun onGameBoardAction(action: GameBoardAction) {
         viewModelScope.launch {
             val currentState = _gameState.first()
             if (gameLogic.hasGameFinished(currentState)) return@launch
@@ -56,7 +86,8 @@ class GameViewModel(
                     if (gameLogic.canMoveThatMarker(currentState, action.oldX, action.oldY)) {
                         updatedState = gameLogic.moveMarker(currentState, action.oldX, action.oldY, action.newX, action.newY)
                         if (updatedState != null) {
-                            _gameState.emit(updatedState)
+                            val gameOutcome = gameLogic.checkForGameEnd(updatedState)
+                            _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
                         } else {
                             _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
                         }
@@ -68,7 +99,8 @@ class GameViewModel(
                     if (gameLogic.canMoveGrid(currentState)) {
                         updatedState = gameLogic.moveGrid(currentState, action.direction)
                         if (updatedState != null) {
-                            _gameState.emit(updatedState)
+                            val gameOutcome = gameLogic.checkForGameEnd(updatedState)
+                            _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
                         } else {
                             _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
                         }
@@ -80,15 +112,15 @@ class GameViewModel(
         }
     }
 
-    fun resetGame()  {
+    private fun selectMarker(row: Int, col: Int) {
         viewModelScope.launch {
-            val initialGameState = gameLogic.resetGame(gameState.first())
-            _gameState.emit(initialGameState)
+            val currentState = _gameState.first()
+            if (!gameLogic.canMoveThatMarker(currentState, row, col)) {
+                _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+            } else {
+                gameLogic.selectMarker(currentState, row, col)
+            }
         }
-    }
-
-    fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean {
-        return gameLogic.isButtonPartOfGrid(gameState, row, col)
     }
 }
 

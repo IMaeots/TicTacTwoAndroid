@@ -13,6 +13,7 @@ class CustomButton @JvmOverloads constructor(
 ) : androidx.appcompat.widget.AppCompatButton(context, attrs) {
 
     var isGridButton = false
+    var isButtonSelected = false
     var piece: GamePiece = GamePiece.Empty
         set(value) {
             field = value

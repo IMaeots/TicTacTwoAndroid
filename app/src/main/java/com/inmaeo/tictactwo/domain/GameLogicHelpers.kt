@@ -23,8 +23,11 @@ data class GameState(
     val gameBoard: List<List<GamePiece>>,
     val gameOutcome: GameOutcome = GameOutcome.None,
     var nextMoveBy: GamePiece = GamePiece.Player1,
-    var gridX: Int = (gameConfiguration.boardSize - gameConfiguration.gridSize) / 2,
-    var gridY: Int= (gameConfiguration.boardSize - gameConfiguration.gridSize) / 2,
+    var gridMainCorner: LocationCoordinates = LocationCoordinates(
+        x = (gameConfiguration.boardSize - gameConfiguration.gridSize) / 2,
+        y = (gameConfiguration.boardSize - gameConfiguration.gridSize) / 2
+    ),
+    var selectedMarker: LocationCoordinates? = null,
     var player1MarkersPlaced: Int = 0,
     var player2MarkersPlaced: Int = 0,
     var moveCount: Int = 0,
@@ -34,3 +37,8 @@ data class GameState(
 sealed interface GameStateError {
     data object UnknownError : GameStateError
 }
+
+data class LocationCoordinates(
+    val x: Int,
+    val y: Int
+)

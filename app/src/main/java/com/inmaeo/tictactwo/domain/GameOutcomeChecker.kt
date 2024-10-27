@@ -3,8 +3,8 @@ package com.inmaeo.tictactwo.domain
 class GameOutcomeChecker(gameState: GameState) {
     private val config = gameState.gameConfiguration
     private val gameBoard = gameState.gameBoard
-    private val gridX = gameState.gridX
-    private val gridY = gameState.gridY
+    private val gridX = gameState.gridMainCorner.x
+    private val gridY = gameState.gridMainCorner.y
 
     fun checkGameOutcome(): GameOutcome {
         val player1Wins = checkForPlayerWin(GamePiece.Player1)
