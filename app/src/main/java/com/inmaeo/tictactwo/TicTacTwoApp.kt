@@ -1,11 +1,16 @@
 package com.inmaeo.tictactwo
 
 import android.app.Application
-import com.inmaeo.tictactwo.repository.GameConfigRepository
+import com.inmaeo.tictactwo.data.db.GameDbHelper
+import com.inmaeo.tictactwo.data.repository.GameRepository
 
 class TicTacTwoApp : Application() {
 
-    val gameConfigRepository: GameConfigRepository by lazy {
-        GameConfigRepository()
+    private val dbHelper: GameDbHelper by lazy {
+        GameDbHelper(this)
+    }
+
+    val gameRepository: GameRepository by lazy {
+        GameRepository(dbHelper)
     }
 }

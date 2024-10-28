@@ -30,17 +30,31 @@
         app:layout_constraintTop_toBottomOf="@id/onboardingImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/gameButton"/>
+        app:layout_constraintBottom_toTopOf="@id/newGameButton"/>
 
     <Button
-        android:id="@+id/gameButton"
+        android:id="@+id/newGameButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/start_game_button_text"
+        android:text="@string/start_new_game_button_text"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@android:color/white"
         android:layout_marginHorizontal="@dimen/default_horizontal_padding"
         app:layout_constraintTop_toBottomOf="@id/onboardingTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/savedGamesButton"/>
+
+    <Button
+        android:id="@+id/savedGamesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/saved_games_button_text"
+        android:backgroundTint="@color/colorPrimaryVariant"
+        android:textColor="@android:color/white"
+        android:layout_marginVertical="@dimen/default_item_padding"
+        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
+        app:layout_constraintTop_toBottomOf="@id/newGameButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottomSpace"/>

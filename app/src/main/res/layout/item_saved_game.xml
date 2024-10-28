@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/content_padding">
+
+    <TextView
+        android:id="@+id/gameNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/content_padding"
+        android:textColor="@color/colorPrimary"
+        android:textAppearance="@style/TextAppearance.App.ExtraBold.Normal"
+        android:textAlignment="center"
+        tools:text="Saved Game Name"/>
+</LinearLayout>

@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_onboardingFragment_to_gameFragment"
             app:destination="@id/gameFragment" />
+        <action
+            android:id="@+id/action_onboardingFragment_to_savedGamesFragment"
+            app:destination="@id/savedGamesFragment" />
     </fragment>
 
     <fragment
@@ -65,6 +68,31 @@
         android:label="GameFragment"
         tools:layout="@layout/fragment_game">
 
+        <argument
+            android:name="gameName"
+            app:nullable="true"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_to_onboardingFragment"
+            app:destination="@id/onboardingFragment" />
+        <action
+            android:id="@+id/action_to_statsFragment"
+            app:destination="@id/statsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/savedGamesFragment"
+        android:name="com.inmaeo.tictactwo.views.SavedGamesFragment"
+        android:label="SavedGamesFragment"
+        tools:layout="@layout/fragment_saved_games">
+
+        <action
+            android:id="@+id/action_savedGamesFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
         <action
             android:id="@+id/action_to_settingsFragment"
             app:destination="@id/settingsFragment" />

@@ -2,31 +2,54 @@ package com.inmaeo.tictactwo.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.inmaeo.tictactwo.data.repository.GameRepository
 import com.inmaeo.tictactwo.domain.GameLogic
 import com.inmaeo.tictactwo.domain.GamePiece
 import com.inmaeo.tictactwo.domain.GameState
 import com.inmaeo.tictactwo.domain.GameStateError
-import com.inmaeo.tictactwo.repository.GameConfigRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class GameViewModel(
-    gameConfigRepository: GameConfigRepository
+    private val gameRepository: GameRepository
 ) : ViewModel() {
 
     private val _gameState = MutableSharedFlow<GameState>(replay = 1)
     val gameState = _gameState.asSharedFlow()
 
     private val gameLogic = GameLogic()
-    private val gameConfig = gameConfigRepository.getGameConfiguration()
+    private val gameConfig = gameRepository.getGameConfiguration()
+    private var hasGameBeenInitialized = false
 
     fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean = gameLogic.isButtonPartOfGrid(gameState, row, col)
 
     fun isGamePieceSelected(gameState: GameState, row: Int, col: Int): Boolean = gameLogic.isGamePieceSelected(gameState, row, col)
 
-    init {
+    fun initializeGame(gameName: String?) {
+        if (hasGameBeenInitialized) return
+
+        if (gameName != null) {
+            loadGame(gameName)
+        } else {
+            startNewBasicGame()
+        }
+        hasGameBeenInitialized = true
+    }
+
+    fun loadGame(gameName: String) {
+        viewModelScope.launch {
+            val savedGame = gameRepository.loadGameState(gameName)
+            if (savedGame != null) {
+                _gameState.emit(savedGame)
+            } else {
+                startNewBasicGame()
+            }
+        }
+    }
+
+    fun startNewBasicGame() {
         viewModelScope.launch {
             val initialState = GameState(
                 gameConfiguration = gameConfig,
@@ -41,6 +64,10 @@ class GameViewModel(
             val initialGameState = gameLogic.resetGame(gameState.first())
             _gameState.emit(initialGameState)
         }
+    }
+
+    fun saveGame(gameName: String, gameState: GameState) {
+        gameRepository.saveGameState(gameName, gameState)
     }
 
     fun handleGameButtonClick(row: Int, col: Int) {

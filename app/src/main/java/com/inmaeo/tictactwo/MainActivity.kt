@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.inmaeo.tictactwo.data.db.GameDbHelper
+import com.inmaeo.tictactwo.data.repository.GameRepository
 import com.inmaeo.tictactwo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -20,16 +22,9 @@ class MainActivity : AppCompatActivity() {
 
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
             navController = navHostFragment.navController
-
-            topBar.settingsButton.setOnClickListener {
-                navController.navigate(R.id.action_to_settingsFragment)
-            }
-            topBar.onboardingButton.setOnClickListener {
-                navController.navigate(R.id.action_to_onboardingFragment)
-            }
-            topBar.statsButton.setOnClickListener {
-                navController.navigate(R.id.action_to_statsFragment)
-            }
+            topBar.settingsButton.setOnClickListener { navController.navigate(R.id.action_to_settingsFragment) }
+            topBar.onboardingButton.setOnClickListener { navController.navigate(R.id.action_to_onboardingFragment) }
+            topBar.statsButton.setOnClickListener { navController.navigate(R.id.action_to_statsFragment) }
         }
     }
 }
