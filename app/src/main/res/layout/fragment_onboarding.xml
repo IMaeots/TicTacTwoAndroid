@@ -9,7 +9,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/app_name"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_app_logo_foreground"
         app:tint="@color/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
@@ -62,7 +62,7 @@
     <Space
         android:id="@+id/bottomSpace"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bottom_padding"
+        android:layout_height="@dimen/content_area_bottom_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
