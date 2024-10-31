@@ -2,9 +2,7 @@ package com.inmaeo.tictactwo.views
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.GridLayout
 import android.widget.Toast
@@ -20,16 +18,20 @@ import com.inmaeo.tictactwo.databinding.FragmentGameBinding
 import com.inmaeo.tictactwo.domain.GameOutcome
 import com.inmaeo.tictactwo.domain.GamePiece
 import com.inmaeo.tictactwo.domain.GameState
+import com.inmaeo.tictactwo.viewmodels.GameBoardAction
 import com.inmaeo.tictactwo.viewmodels.GameViewModel
 import com.inmaeo.tictactwo.viewmodels.GameViewModelFactory
+import com.inmaeo.tictactwo.viewmodels.MoveGridDirection
 import com.inmaeo.tictactwo.views.components.CustomButton
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class GameFragment : Fragment() {
     private var _binding: FragmentGameBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: GameViewModel
     private lateinit var gridLayout: GridLayout
+    private lateinit var gestureDetector: GestureDetector
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,10 +45,12 @@ class GameFragment : Fragment() {
 
         val args: GameFragmentArgs by navArgs()
         val gameRepository = (requireActivity().application as TicTacTwoApp).gameRepository
-        viewModel =
-            ViewModelProvider(this, GameViewModelFactory(gameRepository))[GameViewModel::class.java]
+        viewModel = ViewModelProvider(this, GameViewModelFactory(gameRepository))[GameViewModel::class.java]
 
+        gestureDetector = GestureDetector(context, SwipeGestureListener())
+        binding.gridLayoutContainer.setGestureDetector(gestureDetector)
         gridLayout = binding.gridLayoutContainer
+
         subscribeToGameState()
         viewModel.initializeGame(args.gameName)
     }
@@ -88,14 +92,15 @@ class GameFragment : Fragment() {
             initializeEmptyBoard(gameState)
         }
 
+        val boardSize = gameState.gameConfiguration.boardSize
         for (i in 0 until gridLayout.childCount) {
             val button = gridLayout.getChildAt(i) as CustomButton
-            val row = i / gameState.gameConfiguration.boardSize
-            val col = i % gameState.gameConfiguration.boardSize
+            val row = i / boardSize
+            val col = i % boardSize
 
-            button.piece = gameState.gameBoard[row][col]
-            button.isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
+            button.piece = viewModel.getGamePiece(gameState, row, col)
             button.isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
+            button.isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
         }
     }
 
@@ -122,7 +127,7 @@ class GameFragment : Fragment() {
                 columnSpec = GridLayout.spec(col, 1f)
             }
             piece = GamePiece.Empty
-            isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
+            isGridButton = viewModel.isButtonPartOfGrid(gameState, row, row)
             isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
             setOnClickListener {
                 viewModel.handleGameButtonClick(row, col)
@@ -158,6 +163,43 @@ class GameFragment : Fragment() {
         val regex = Regex("^[a-zA-Z0-9]+$")
         return name.isNotBlank() && regex.matches(name)
     }
+
+    inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
+        private val swipeThreshold = 150
+        private val swipeVelocityThreshold = 300
+
+        override fun onDown(e: MotionEvent): Boolean {
+            return true
+        }
+
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            val diffX = e2.x - (e1?.x ?: 0f)
+            val diffY = e2.y - (e1?.y ?: 0f)
+
+            return when {
+                abs(diffX) > abs(diffY) -> {
+                    if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
+                        if (diffX > 0) {
+                            viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.RIGHT))
+                        } else {
+                            viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.LEFT))
+                        }
+                        true
+                    } else false
+                }
+                abs(diffY) > swipeThreshold && abs(velocityY) > swipeVelocityThreshold -> {
+                    if (diffY > 0) {
+                        viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.DOWN))
+                    } else {
+                        viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.UP))
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

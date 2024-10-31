@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toTopOf="@+id/gridLayoutContainer"
         tools:text="@string/start_new_game_button_text"/>
 
-    <GridLayout
+    <com.inmaeo.tictactwo.views.components.SwipeDetectingGridLayout
         android:id="@+id/gridLayoutContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -4,9 +4,7 @@ import com.inmaeo.tictactwo.viewmodels.MoveGridDirection
 
 class GameLogic {
 
-    fun checkForGameEnd(gameState: GameState): GameOutcome = GameOutcomeChecker(gameState).checkGameOutcome()
-
-    fun hasGameFinished(gameState: GameState) = gameState.gameOutcome != GameOutcome.None
+    fun checkForGameEnd(gameState: GameState) = GameOutcomeChecker(gameState).checkGameOutcome()
 
     fun canPlaceMarker(gameState: GameState): Boolean {
         return when (gameState.nextMoveBy) {
@@ -35,10 +33,6 @@ class GameLogic {
 
     fun canMoveThatMarker(gameState: GameState, currentX: Int, currentY: Int): Boolean {
         return gameState.gameBoard[currentX][currentY] == gameState.nextMoveBy
-    }
-
-    fun selectMarker(gameState: GameState, currentX: Int, currentY: Int) {
-        gameState.selectedMarker = LocationCoordinates(currentX, currentY)
     }
 
     fun moveMarker(gameState: GameState, oldX: Int, oldY: Int, newX: Int, newY: Int): GameState? {
@@ -81,19 +75,23 @@ class GameLogic {
         val boardSize = gameState.gameConfiguration.boardSize
         if (gridX !in 0..(boardSize - gridSize) || gridY !in 0..(boardSize - gridSize)) return null
 
-        return gameState.copy(gridMainCorner = LocationCoordinates(gridX, gridY))
+        return gameState.copy(
+            gridMainCorner = LocationCoordinates(gridX, gridY),
+            nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1,
+            moveCount = gameState.moveCount + 1
+        )
     }
 
-    fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean {
+    fun isButtonPartOfGrid(gameState: GameState, currentX: Int, currentY: Int): Boolean {
         val gridX = gameState.gridMainCorner.x
         val gridY = gameState.gridMainCorner.y
         val gridSize = gameState.gameConfiguration.gridSize
 
-        return row in gridX until (gridX + gridSize) && col in gridY until (gridY + gridSize)
+        return currentX in gridX until (gridX + gridSize) && currentY in gridY until (gridY + gridSize)
     }
 
-    fun isGamePieceSelected(gameState: GameState, row: Int, col: Int): Boolean {
-        return gameState.selectedMarker?.x == row && gameState.selectedMarker?.y == col
+    fun isGamePieceSelected(gameState: GameState, currentX: Int, currentY: Int): Boolean {
+        return gameState.selectedMarker?.x == currentX && gameState.selectedMarker?.y == currentY
     }
 
     fun resetGame(gameState: GameState): GameState {

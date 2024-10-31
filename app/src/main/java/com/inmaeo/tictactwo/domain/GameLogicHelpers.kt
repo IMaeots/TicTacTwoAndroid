@@ -36,6 +36,7 @@ data class GameState(
 
 sealed interface GameStateError {
     data object UnknownError : GameStateError
+    data object InvalidMove : GameStateError
 }
 
 data class LocationCoordinates(
