@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.inmaeo.tictactwo.R
 import com.inmaeo.tictactwo.TicTacTwoApp
+import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.databinding.FragmentGameBinding
 import com.inmaeo.tictactwo.domain.GameOutcome
 import com.inmaeo.tictactwo.domain.GamePiece
@@ -147,8 +148,12 @@ class GameFragment : Fragment() {
         builder.setPositiveButton(getString(R.string.general_save)) { dialog, _ ->
             val gameName = input.text.toString()
             if (isValidGameName(gameName)) {
-                viewModel.saveGame(gameName, gameState)
-                Toast.makeText(requireContext(), "Your game was saved under the name of: $gameName!", Toast.LENGTH_SHORT).show()
+                when (val result = viewModel.saveGame(gameName, gameState)) {
+                    SaveGameResult.Success -> Toast.makeText(requireContext(), "Your game was saved under the name of: $gameName!", Toast.LENGTH_SHORT).show()
+                    is SaveGameResult.Failure -> {
+                        Toast.makeText(requireContext(), "Saving game failed! ${result.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
                 Toast.makeText(requireContext(), "Game name provided does not match validation rules.", Toast.LENGTH_SHORT).show()
             }

@@ -24,15 +24,41 @@ class GameRepository(
         )
     }
 
-    fun saveGameState(gameName: String, gameState: GameState) {
+    fun saveGameState(gameName: String, gameState: GameState): SaveGameResult {
+        if (checkIfGameNameExists(gameName)) return SaveGameResult.Failure("Game with the same name already exists.")
+
         val db = dbHelper.writableDatabase
-        val json = gson.toJson(gameState)
-        val values = ContentValues().apply {
-            put(GameDbHelper.COLUMN_GAME_NAME, gameName)
-            put(GameDbHelper.COLUMN_GAME_STATE, json)
+        return try {
+            val jsonGameState = gson.toJson(gameState)
+            val values = ContentValues().apply {
+                put(GameDbHelper.COLUMN_GAME_NAME, gameName)
+                put(GameDbHelper.COLUMN_GAME_STATE, jsonGameState)
+            }
+
+            val result = db.insertWithOnConflict(GameDbHelper.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_FAIL)
+
+            if (result != -1L) SaveGameResult.Success else SaveGameResult.Failure("Failed to save game state.")
+        } catch (e: Exception) {
+            SaveGameResult.Failure("Error occurred: ${e.message}")
+        } finally {
+            db.close()
         }
-        db.insertWithOnConflict(GameDbHelper.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    private fun checkIfGameNameExists(gameName: String): Boolean {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            GameDbHelper.TABLE_NAME,
+            arrayOf(GameDbHelper.COLUMN_GAME_NAME),
+            "${GameDbHelper.COLUMN_GAME_NAME} = ?",
+            arrayOf(gameName),
+            null, null, null
+        )
+        val result = cursor.count > 0
+
+        cursor.close()
         db.close()
+        return result
     }
 
     fun loadGameState(gameName: String): GameState? {
@@ -92,3 +118,9 @@ class GameRepository(
         db.close()
     }
 }
+
+sealed interface SaveGameResult {
+    data object Success : SaveGameResult
+    data class Failure(val message: String) : SaveGameResult
+}
+

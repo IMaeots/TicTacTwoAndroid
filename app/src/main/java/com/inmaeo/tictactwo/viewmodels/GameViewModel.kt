@@ -3,6 +3,7 @@ package com.inmaeo.tictactwo.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.inmaeo.tictactwo.data.repository.GameRepository
+import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.domain.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -38,9 +39,8 @@ class GameViewModel(
         }
     }
 
-    fun saveGame(gameName: String, gameState: GameState) {
+    fun saveGame(gameName: String, gameState: GameState): SaveGameResult =
         gameRepository.saveGameState(gameName, gameState)
-    }
 
     fun getGamePiece(gameState: GameState, row: Int, col: Int): GamePiece =
         gameState.gameBoard[col][row]
