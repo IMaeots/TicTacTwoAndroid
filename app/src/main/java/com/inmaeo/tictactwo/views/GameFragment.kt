@@ -1,6 +1,8 @@
 package com.inmaeo.tictactwo.views
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
@@ -14,6 +16,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.inmaeo.tictactwo.R
 import com.inmaeo.tictactwo.TicTacTwoApp
+import com.inmaeo.tictactwo.TicTacTwoApp.Companion.SETTINGS
+import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT1
+import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT2
+import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT3
 import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.databinding.FragmentGameBinding
 import com.inmaeo.tictactwo.domain.GameOutcome
@@ -31,6 +37,7 @@ class GameFragment : Fragment() {
     private var _binding: FragmentGameBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: GameViewModel
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var gridLayout: GridLayout
     private lateinit var gestureDetector: GestureDetector
 
@@ -47,6 +54,7 @@ class GameFragment : Fragment() {
         val args: GameFragmentArgs by navArgs()
         val gameRepository = (requireActivity().application as TicTacTwoApp).gameRepository
         viewModel = ViewModelProvider(this, GameViewModelFactory(gameRepository))[GameViewModel::class.java]
+        sharedPreferences = requireContext().getSharedPreferences(SETTINGS, Context.MODE_PRIVATE)
 
         gestureDetector = GestureDetector(context, SwipeGestureListener())
         binding.gridLayoutContainer.setGestureDetector(gestureDetector)
@@ -69,6 +77,24 @@ class GameFragment : Fragment() {
     private fun handleGameState(gameState: GameState) {
         drawBoard(gameState)
         with(binding) {
+            when(gameState.gameOutcome) {
+                GameOutcome.None -> gameStatusTextView.text = "It is ${gameState.nextMoveBy}'s turn"
+                GameOutcome.Player1Won -> {
+                    gameStatusTextView.text = "Player 1 won!"
+                    sharedPreferences.edit().putInt(STAT1, sharedPreferences.getInt(STAT1, 0) + 1).apply()
+                    Toast.makeText(requireContext(), "Player 1 won!", Toast.LENGTH_SHORT).show()
+                }
+                GameOutcome.Player2Won -> {
+                    gameStatusTextView.text = "Player 2 won!"
+                    sharedPreferences.edit().putInt(STAT2, sharedPreferences.getInt(STAT2, 0) + 1).apply()
+                    Toast.makeText(requireContext(), "Player 2 won!", Toast.LENGTH_SHORT).show()
+                }
+                GameOutcome.Draw -> {
+                    gameStatusTextView.text = "Game ended in a DRAW! Both won!"
+                    sharedPreferences.edit().putInt(STAT3, sharedPreferences.getInt(STAT3, 0) + 1).apply()
+                    Toast.makeText(requireContext(), "Game ended in a DRAW!", Toast.LENGTH_SHORT).show()
+                }
+            }
             gameStatusTextView.text = when(gameState.gameOutcome) {
                 GameOutcome.None -> "It is ${gameState.nextMoveBy}'s turn"
                 GameOutcome.Player1Won -> "Player 1 won!"

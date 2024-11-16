@@ -30,21 +30,11 @@
         app:layout_constraintBottom_toTopOf="@id/saveButton">
 
         <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/switchSound"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_switch_sound_effects_text"
-            app:layout_constraintTop_toBottomOf="@id/text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
-
-        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/switchMusic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_switch_background_music_text"
-            app:layout_constraintTop_toBottomOf="@id/switchSound"
+            app:layout_constraintTop_toBottomOf="@id/text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"/>
