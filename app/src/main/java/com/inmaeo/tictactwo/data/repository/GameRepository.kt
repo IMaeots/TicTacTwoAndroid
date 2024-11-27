@@ -52,7 +52,7 @@ class GameRepository(
             arrayOf(GameDbHelper.COLUMN_GAME_NAME),
             "${GameDbHelper.COLUMN_GAME_NAME} = ?",
             arrayOf(gameName),
-            null, null, null
+            null, null, null, "1"
         )
         val result = cursor.count > 0
 
@@ -84,7 +84,7 @@ class GameRepository(
             } else {
                 null
             }
-        }.also { db.close() }
+        }
     }
 
     fun getSavedGameNames(): List<String> {
