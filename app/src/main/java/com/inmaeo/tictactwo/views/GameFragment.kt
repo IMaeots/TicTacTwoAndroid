@@ -73,15 +73,15 @@ class GameFragment : Fragment() {
                 when (gameState.gameOutcome) {
                     GameOutcome.None -> R.string.game_status_turn
                     GameOutcome.Player1Won -> {
-                        Toast.makeText(requireContext(), getString(R.string.game_status_player1_won), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.game_status_player1_won), Toast.LENGTH_LONG).show()
                         R.string.game_status_player1_won
                     }
                     GameOutcome.Player2Won -> {
-                        Toast.makeText(requireContext(), getString(R.string.game_status_player2_won), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.game_status_player2_won), Toast.LENGTH_LONG).show()
                         R.string.game_status_player2_won
                     }
                     GameOutcome.Draw -> {
-                        Toast.makeText(requireContext(), getString(R.string.game_status_draw), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.game_status_draw), Toast.LENGTH_LONG).show()
                         R.string.game_status_draw
                     }
                 }, gameState.nextMoveBy
@@ -157,9 +157,9 @@ class GameFragment : Fragment() {
                     val result = viewModel.saveGame(gameName, gameState)
                     val messageRes = if (result is SaveGameResult.Success) R.string.game_popup_saved
                         else R.string.game_popup_save_failed
-                    Toast.makeText(requireContext(), getString(messageRes, gameName), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(messageRes, gameName), Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.game_popup_invalid_name), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.game_popup_invalid_name), Toast.LENGTH_LONG).show()
                 }
                 dialog.dismiss()
             }

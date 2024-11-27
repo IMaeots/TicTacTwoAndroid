@@ -13,19 +13,25 @@
 
         <action
             android:id="@+id/action_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/onboardingFragment"
+            app:popUpTo="@id/onboardingFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_statsFragment"
-            app:destination="@id/statsFragment" />
+            app:destination="@id/statsFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_onboardingFragment_to_gameFragment"
-            app:destination="@id/gameFragment" />
+            app:destination="@id/gameFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_onboardingFragment_to_savedGamesFragment"
-            app:destination="@id/savedGamesFragment" />
+            app:destination="@id/savedGamesFragment"
+            app:popUpTo="@id/onboardingFragment" />
     </fragment>
 
     <fragment
@@ -36,13 +42,17 @@
 
         <action
             android:id="@+id/action_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/onboardingFragment"
+            app:popUpTo="@id/onboardingFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_statsFragment"
-            app:destination="@id/statsFragment" />
+            app:destination="@id/statsFragment"
+            app:popUpTo="@id/onboardingFragment" />
     </fragment>
 
     <fragment
@@ -53,13 +63,17 @@
 
         <action
             android:id="@+id/action_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/onboardingFragment"
+            app:popUpTo="@id/onboardingFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_statsFragment"
-            app:destination="@id/statsFragment" />
+            app:destination="@id/statsFragment"
+            app:popUpTo="@id/onboardingFragment" />
     </fragment>
 
     <fragment
@@ -78,7 +92,9 @@
             app:destination="@id/settingsFragment" />
         <action
             android:id="@+id/action_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/onboardingFragment"
+            app:popUpTo="@id/onboardingFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_to_statsFragment"
             app:destination="@id/statsFragment" />
@@ -92,16 +108,21 @@
 
         <action
             android:id="@+id/action_savedGamesFragment_to_gameFragment"
-            app:destination="@id/gameFragment" />
+            app:destination="@id/gameFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:popUpTo="@id/onboardingFragment" />
         <action
             android:id="@+id/action_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/onboardingFragment"
+            app:popUpTo="@id/onboardingFragment"
+            app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_to_statsFragment"
-            app:destination="@id/statsFragment" />
+            app:destination="@id/statsFragment"
+            app:popUpTo="@id/onboardingFragment" />
     </fragment>
 
 </navigation>

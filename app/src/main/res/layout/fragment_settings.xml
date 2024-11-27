@@ -27,7 +27,7 @@
         app:layout_constraintTop_toBottomOf="@id/settingsTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/saveButton">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/switchMusic"
@@ -40,26 +40,5 @@
             android:layout_marginTop="16dp"/>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/general_action_save"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@android:color/white"
-        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
-        app:layout_constraintTop_toBottomOf="@id/settingsFrame"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomSpace" />
-
-    <Space
-        android:id="@+id/bottomSpace"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/content_area_bottom_padding"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
