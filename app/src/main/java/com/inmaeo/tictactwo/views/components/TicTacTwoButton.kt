@@ -37,7 +37,15 @@ class TicTacTwoButton @JvmOverloads constructor(
     init {
         background = gradientDrawable
         setTextColor(context.getColor(R.color.colorPrimary))
-        textSize = 24f
+
+        setPadding(0, 0, 0, 0)
+        gravity = android.view.Gravity.CENTER
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        textSize = (Math.min(w, h) / 6).toFloat()
     }
 
     private fun updateAppearance() {
