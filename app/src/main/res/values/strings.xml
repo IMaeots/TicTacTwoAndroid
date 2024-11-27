@@ -1,24 +1,42 @@
 <resources>
-    <string name="app_name">TicTacTwo</string>
-    <string name="settings_desc">Go to Settings</string>
-    <string name="onboarding_logo_desc">Go to Onboarding</string>
-    <string name="stats_desc">Go to Statistics</string>
-    <string name="reset_button_text">Reset Game</string>
-    <string name="save_game_button_text">Save Game</string>
-    <string name="clear_saved_games_text">Clear Saved Games</string>
-    <string name="game_status_players_turn">%s\'s turn</string>
-    <string name="start_new_game_button_text">Start New Game</string>
-    <string name="saved_games_button_text">Saved Games</string>
-    <string name="empty_saved_games_list_text">There are no Saved Games!</string>
-    <string name="onboarding_title_text">Welcome to Tic Tac Two! \nA fun twist on classic Tic Tac Toe.</string>
-    <string name="settings_title">Settings</string>
-    <string name="stats_title">Player Stats</string>
-    <string name="reset_stats_button_text">Reset Stats</string>
-    <string name="save_settings_button_text">Save Settings</string>
-    <string name="settings_switch_sound_effects_text">Sound Effects</string>
-    <string name="settings_switch_background_music_text">Background Music</string>
-    <string name="game_name_hint">Game name…</string>
 
-    <string name="general_save">Save</string>
-    <string name="general_cancel">Cancel</string>
+    <string name="app_name">TicTacTwo</string>
+
+    <string name="general_action_save">Save</string>
+    <string name="general_action_cancel">Cancel</string>
+
+    <string name="onboarding_logo_description">Go to Onboarding</string>
+    <string name="onboarding_title">Welcome to Tic Tac Two! \nA fun twist on classic Tic Tac Toe.</string>
+
+    <string name="game_action_start_new">Start New Game</string>
+    <string name="game_action_reset">Reset Game</string>
+    <string name="game_action_save">Save Game</string>
+    <string name="game_name_hint">Game name…</string>
+    <string name="game_status_turn">It is %s\'s turn</string>
+    <string name="game_status_player1_won">Player 1 won!</string>
+    <string name="game_status_player2_won">Player 2 won!</string>
+    <string name="game_status_draw">Game ended in a DRAW! Both won!</string>
+
+    <string name="game_popup_saved">Your game was saved under the name of: %s!</string>
+    <string name="game_popup_save_failed">Saving game failed! %s</string>
+    <string name="game_popup_invalid_name">Game name provided does not match validation rules.</string>
+
+    <string name="saved_games_title">Saved Games</string>
+    <string name="saved_games_empty_list">There are no Saved Games!</string>
+    <string name="saved_games_action_clear">Clear Saved Games</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_description">Go to Settings</string>
+    <string name="settings_option_sound_effects">Sound Effects</string>
+    <string name="settings_option_background_music">Background Music</string>
+    <string name="settings_action_save">Save Settings</string>
+    <string name="settings_popup_saved">Settings saved!</string>
+
+    <string name="stats_title">Player Stats</string>
+    <string name="stats_description">Go to Statistics</string>
+    <string name="stats_player1_wins">Player 1 wins: %d</string>
+    <string name="stats_player2_wins">Player 2 wins: %d</string>
+    <string name="stats_draws">Draws: %d</string>
+    <string name="stats_action_reset">Reset Stats</string>
+
 </resources>

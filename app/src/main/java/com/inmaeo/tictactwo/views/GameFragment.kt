@@ -1,8 +1,8 @@
 package com.inmaeo.tictactwo.views
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
@@ -23,217 +23,172 @@ import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT3
 import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.databinding.FragmentGameBinding
 import com.inmaeo.tictactwo.domain.GameOutcome
-import com.inmaeo.tictactwo.domain.GamePiece
 import com.inmaeo.tictactwo.domain.GameState
 import com.inmaeo.tictactwo.viewmodels.GameBoardAction
 import com.inmaeo.tictactwo.viewmodels.GameViewModel
 import com.inmaeo.tictactwo.viewmodels.GameViewModelFactory
 import com.inmaeo.tictactwo.viewmodels.MoveGridDirection
-import com.inmaeo.tictactwo.views.components.CustomButton
+import com.inmaeo.tictactwo.views.components.TicTacTwoButton
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class GameFragment : Fragment() {
-    private var _binding: FragmentGameBinding? = null
-    private val binding get() = _binding!!
+
+    private lateinit var binding: FragmentGameBinding
     private lateinit var viewModel: GameViewModel
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var gridLayout: GridLayout
-    private lateinit var gestureDetector: GestureDetector
+
+    private val args: GameFragmentArgs by navArgs()
+    private val sharedPreferences by lazy { requireContext().getSharedPreferences(SETTINGS, Context.MODE_PRIVATE) }
+    private val gestureDetector by lazy { GestureDetector(context, SwipeGestureListener()) }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentGameBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = FragmentGameBinding.inflate(inflater, container, false).apply { binding = this }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val args: GameFragmentArgs by navArgs()
         val gameRepository = (requireActivity().application as TicTacTwoApp).gameRepository
         viewModel = ViewModelProvider(this, GameViewModelFactory(gameRepository))[GameViewModel::class.java]
-        sharedPreferences = requireContext().getSharedPreferences(SETTINGS, Context.MODE_PRIVATE)
 
-        gestureDetector = GestureDetector(context, SwipeGestureListener())
-        binding.gridLayoutContainer.setGestureDetector(gestureDetector)
         gridLayout = binding.gridLayoutContainer
-
-        subscribeToGameState()
+        binding.gridLayoutContainer.setGestureDetector(gestureDetector)
         viewModel.initializeGame(args.gameName)
+        subscribeToGameState()
     }
 
     private fun subscribeToGameState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.gameState.collect { gameState ->
-                    handleGameState(gameState)
-                }
+                viewModel.gameState.collect(::handleGameState)
             }
         }
     }
 
     private fun handleGameState(gameState: GameState) {
         drawBoard(gameState)
-        with(binding) {
-            when(gameState.gameOutcome) {
-                GameOutcome.None -> gameStatusTextView.text = "It is ${gameState.nextMoveBy}'s turn"
-                GameOutcome.Player1Won -> {
-                    gameStatusTextView.text = "Player 1 won!"
-                    sharedPreferences.edit().putInt(STAT1, sharedPreferences.getInt(STAT1, 0) + 1).apply()
-                    Toast.makeText(requireContext(), "Player 1 won!", Toast.LENGTH_SHORT).show()
-                }
-                GameOutcome.Player2Won -> {
-                    gameStatusTextView.text = "Player 2 won!"
-                    sharedPreferences.edit().putInt(STAT2, sharedPreferences.getInt(STAT2, 0) + 1).apply()
-                    Toast.makeText(requireContext(), "Player 2 won!", Toast.LENGTH_SHORT).show()
-                }
-                GameOutcome.Draw -> {
-                    gameStatusTextView.text = "Game ended in a DRAW! Both won!"
-                    sharedPreferences.edit().putInt(STAT3, sharedPreferences.getInt(STAT3, 0) + 1).apply()
-                    Toast.makeText(requireContext(), "Game ended in a DRAW!", Toast.LENGTH_SHORT).show()
-                }
-            }
-            gameStatusTextView.text = when(gameState.gameOutcome) {
-                GameOutcome.None -> "It is ${gameState.nextMoveBy}'s turn"
-                GameOutcome.Player1Won -> "Player 1 won!"
-                GameOutcome.Player2Won -> "Player 2 won!"
-                GameOutcome.Draw -> "Game ended in a DRAW! Both won!"
-            }
-
-            if (gameState.gameOutcome == GameOutcome.None) {
-                actionButton.text = context?.getString(R.string.save_game_button_text)
-                actionButton.setOnClickListener {
-                    promptForGameName(gameState)
-                }
-            } else {
-                actionButton.text = context?.getString(R.string.reset_button_text)
-                actionButton.setOnClickListener { viewModel.resetGame() }
-            }
-        }
-    }
-
-    private fun drawBoard(gameState: GameState) {
-        if (gridLayout.childCount == 0) {
-            initializeEmptyBoard(gameState)
-        }
-
-        val boardSize = gameState.gameConfiguration.boardSize
-        for (i in 0 until gridLayout.childCount) {
-            val button = gridLayout.getChildAt(i) as CustomButton
-            val row = i / boardSize
-            val col = i % boardSize
-
-            button.piece = viewModel.getGamePiece(gameState, row, col)
-            button.isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
-            button.isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
-        }
-    }
-
-    private fun initializeEmptyBoard(gameState: GameState) {
-        gridLayout.removeAllViews()
-        val boardSize = gameState.gameConfiguration.boardSize
-        gridLayout.rowCount = boardSize
-        gridLayout.columnCount = boardSize
-
-        for (row in 0 until boardSize) {
-            for (col in 0 until boardSize) {
-                val button = createInitialButton(row, col, gameState)
-                gridLayout.addView(button)
-            }
-        }
-    }
-
-    private fun createInitialButton(row: Int, col: Int, gameState: GameState): CustomButton {
-        return CustomButton(requireContext()).apply {
-            layoutParams = GridLayout.LayoutParams().apply {
-                width = 0
-                height = 0
-                rowSpec = GridLayout.spec(row, 1f)
-                columnSpec = GridLayout.spec(col, 1f)
-            }
-            piece = GamePiece.Empty
-            isGridButton = viewModel.isButtonPartOfGrid(gameState, row, row)
-            isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
-            setOnClickListener {
-                viewModel.handleGameButtonClick(row, col)
-            }
-        }
-    }
-
-    private fun promptForGameName(gameState: GameState) {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle(getString(R.string.save_game_button_text))
-
-        val dialogView = layoutInflater.inflate(R.layout.dialog_save_game, null)
-        builder.setView(dialogView)
-
-        val input = dialogView.findViewById<EditText>(R.id.gameNameInput)
-
-        builder.setPositiveButton(getString(R.string.general_save)) { dialog, _ ->
-            val gameName = input.text.toString()
-            if (isValidGameName(gameName)) {
-                when (val result = viewModel.saveGame(gameName, gameState)) {
-                    SaveGameResult.Success -> Toast.makeText(requireContext(), "Your game was saved under the name of: $gameName!", Toast.LENGTH_SHORT).show()
-                    is SaveGameResult.Failure -> {
-                        Toast.makeText(requireContext(), "Saving game failed! ${result.message}", Toast.LENGTH_SHORT).show()
+        binding.apply {
+            gameStatusTextView.text = getString(
+                when (gameState.gameOutcome) {
+                    GameOutcome.None -> R.string.game_status_turn
+                    GameOutcome.Player1Won -> {
+                        Toast.makeText(requireContext(), getString(R.string.game_status_player1_won), Toast.LENGTH_SHORT).show()
+                        R.string.game_status_player1_won
                     }
+                    GameOutcome.Player2Won -> {
+                        Toast.makeText(requireContext(), getString(R.string.game_status_player2_won), Toast.LENGTH_SHORT).show()
+                        R.string.game_status_player2_won
+                    }
+                    GameOutcome.Draw -> {
+                        Toast.makeText(requireContext(), getString(R.string.game_status_draw), Toast.LENGTH_SHORT).show()
+                        R.string.game_status_draw
+                    }
+                }, gameState.nextMoveBy
+            )
+
+            if (gameState.gameOutcome != GameOutcome.None) updateStatistics(gameState.gameOutcome)
+
+            actionButton.apply {
+                text = getString(if (gameState.gameOutcome == GameOutcome.None) R.string.game_action_save else R.string.game_action_reset)
+                setOnClickListener {
+                    if (gameState.gameOutcome == GameOutcome.None) promptForGameName(gameState)
+                    else viewModel.resetGame()
                 }
-            } else {
-                Toast.makeText(requireContext(), "Game name provided does not match validation rules.", Toast.LENGTH_SHORT).show()
             }
-            dialog.dismiss()
         }
-        builder.setNegativeButton(getString(R.string.general_cancel)) { dialog, _ -> dialog.cancel() }
-
-        builder.show()
     }
 
-    private fun isValidGameName(name: String): Boolean {
-        val regex = Regex("^[a-zA-Z0-9]+$")
-        return name.isNotBlank() && regex.matches(name)
+    private fun updateStatistics(outcome: GameOutcome) {
+        val statKey = when (outcome) {
+            GameOutcome.Player1Won -> STAT1
+            GameOutcome.Player2Won -> STAT2
+            GameOutcome.Draw -> STAT3
+            else -> return
+        }
+        sharedPreferences.edit().putInt(statKey, sharedPreferences.getInt(statKey, 0) + 1).apply()
     }
+
+    private fun drawBoard(gameState: GameState) =
+        binding.gridLayoutContainer.apply {
+            val boardSize = gameState.gameConfiguration.boardSize
+            if (childCount == 0) initializeEmptyBoard(boardSize)
+
+            for (i in 0 until childCount) {
+                val row = i / boardSize
+                val col = i % boardSize
+                (getChildAt(i) as TicTacTwoButton).apply {
+                    piece = viewModel.getGamePiece(gameState, row, col)
+                    isButtonSelected = viewModel.isGamePieceSelected(gameState, row, col)
+                    isGridButton = viewModel.isButtonPartOfGrid(gameState, row, col)
+                }
+            }
+        }
+
+    private fun initializeEmptyBoard(size: Int) =
+        binding.gridLayoutContainer.apply {
+            removeAllViews()
+            rowCount = size
+            columnCount = size
+            repeat(size * size) { index ->
+                val row = index / size
+                val col = index % size
+                addView(TicTacTwoButton(requireContext()).apply {
+                    layoutParams = GridLayout.LayoutParams().apply {
+                        width = 0
+                        height = 0
+                        rowSpec = GridLayout.spec(row, 1f)
+                        columnSpec = GridLayout.spec(col, 1f)
+                    }
+                    setOnClickListener { viewModel.handleGameButtonClick(row, col) }
+                })
+            }
+        }
+
+    @SuppressLint("InflateParams")
+    private fun promptForGameName(gameState: GameState) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_save_game, null)
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle(getString(R.string.game_action_save))
+            setView(dialogView)
+            setPositiveButton(getString(R.string.general_action_save)) { dialog, _ ->
+                val gameName = dialogView.findViewById<EditText>(R.id.gameNameInput).text.toString()
+                if (gameName.isValidName()) {
+                    val result = viewModel.saveGame(gameName, gameState)
+                    val messageRes = if (result is SaveGameResult.Success) R.string.game_popup_saved
+                        else R.string.game_popup_save_failed
+                    Toast.makeText(requireContext(), getString(messageRes, gameName), Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), getString(R.string.game_popup_invalid_name), Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            setNegativeButton(getString(R.string.general_action_cancel)) { dialog, _ -> dialog.cancel() }
+        }.show()
+    }
+
+    private fun String.isValidName() = isNotBlank() && matches(Regex("^[a-zA-Z0-9]+$"))
 
     inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
         private val swipeThreshold = 150
         private val swipeVelocityThreshold = 300
 
-        override fun onDown(e: MotionEvent): Boolean {
-            return true
-        }
+        override fun onDown(e: MotionEvent): Boolean = true
 
         override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
             val diffX = e2.x - (e1?.x ?: 0f)
             val diffY = e2.y - (e1?.y ?: 0f)
-
             return when {
-                abs(diffX) > abs(diffY) -> {
-                    if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
-                        if (diffX > 0) {
-                            viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.RIGHT))
-                        } else {
-                            viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.LEFT))
-                        }
-                        true
-                    } else false
+                abs(diffX) > abs(diffY) && abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold -> {
+                    viewModel.onGameBoardAction(GameBoardAction.MoveGrid(if (diffX > 0) MoveGridDirection.RIGHT else MoveGridDirection.LEFT))
+                    true
                 }
                 abs(diffY) > swipeThreshold && abs(velocityY) > swipeVelocityThreshold -> {
-                    if (diffY > 0) {
-                        viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.DOWN))
-                    } else {
-                        viewModel.onGameBoardAction(GameBoardAction.MoveGrid(MoveGridDirection.UP))
-                    }
+                    viewModel.onGameBoardAction(GameBoardAction.MoveGrid(if (diffY > 0) MoveGridDirection.DOWN else MoveGridDirection.UP))
                     true
                 }
                 else -> false
             }
         }
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

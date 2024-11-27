@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.inmaeo.tictactwo.data.db.GameDbHelper
 import com.inmaeo.tictactwo.data.repository.GameRepository
-import com.inmaeo.tictactwo.domain.BackgroundMusicManager
+import com.inmaeo.tictactwo.service.BackgroundMusicManager
 
 class TicTacTwoApp : Application() {
 

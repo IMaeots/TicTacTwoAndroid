@@ -12,8 +12,8 @@ class SwipeDetectingGridLayout @JvmOverloads constructor(
 
     private var gestureDetector: GestureDetector? = null
 
-    fun setGestureDetector(gestureDetector: GestureDetector) {
-        this.gestureDetector = gestureDetector
+    init {
+        gestureDetector = GestureDetector(context, TapGestureListener())
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -36,14 +36,14 @@ class SwipeDetectingGridLayout @JvmOverloads constructor(
         return true
     }
 
+    fun setGestureDetector(gestureDetector: GestureDetector) {
+        this.gestureDetector = gestureDetector
+    }
+
     inner class TapGestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             performClick()
             return true
         }
-    }
-
-    init {
-        gestureDetector = GestureDetector(context, TapGestureListener())
     }
 }

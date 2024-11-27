@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.inmaeo.tictactwo.R
 import com.inmaeo.tictactwo.TicTacTwoApp.Companion.SETTINGS
 import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT1
 import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT2
@@ -14,13 +15,12 @@ import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT3
 import com.inmaeo.tictactwo.databinding.FragmentStatsBinding
 
 class StatsFragment : Fragment() {
-    private var _binding: FragmentStatsBinding? = null
-    private val binding get() = _binding!!
 
+    private lateinit var binding: FragmentStatsBinding
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentStatsBinding.inflate(layoutInflater, container, false)
+        binding = FragmentStatsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -46,13 +46,8 @@ class StatsFragment : Fragment() {
         val losses = sharedPreferences.getInt(STAT2, 0)
         val draws = sharedPreferences.getInt(STAT3, 0)
 
-        binding.winStat.text = "Player 1 wins: $wins"
-        binding.lossStat.text = "Player 2 wins: $losses"
-        binding.drawsStat.text = "Draws: $draws"
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+        binding.winStat.text = getString(R.string.stats_player1_wins, wins)
+        binding.lossStat.text = getString(R.string.stats_player2_wins, losses)
+        binding.drawsStat.text = getString(R.string.stats_draws, draws)
     }
 }

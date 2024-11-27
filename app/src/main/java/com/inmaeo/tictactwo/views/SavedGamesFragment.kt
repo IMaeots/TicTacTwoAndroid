@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.inmaeo.tictactwo.TicTacTwoApp
@@ -36,24 +35,26 @@ class SavedGamesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.gameNames.observe(viewLifecycleOwner, Observer { gameNames ->
-            if (gameNames.isEmpty()) {
-                binding.recyclerView.visibility = View.GONE
-                binding.noSavedGamesTextView.visibility = View.VISIBLE
-            } else {
-                binding.recyclerView.visibility = View.VISIBLE
-                binding.noSavedGamesTextView.visibility = View.GONE
+        with(binding) {
+            viewModel.gameNames.observe(viewLifecycleOwner) { gameNames ->
+                if (gameNames.isEmpty()) {
+                    recyclerView.visibility = View.GONE
+                    noSavedGamesTextView.visibility = View.VISIBLE
+                } else {
+                    recyclerView.visibility = View.VISIBLE
+                    noSavedGamesTextView.visibility = View.GONE
 
-                val adapter = SavedGamesAdapter(gameNames) { gameName ->
-                    navigateToGameFragment(gameName)
+                    val adapter = SavedGamesAdapter(gameNames) { gameName ->
+                        navigateToGameFragment(gameName)
+                    }
+                    recyclerView.layoutManager = LinearLayoutManager(context)
+                    recyclerView.adapter = adapter
                 }
-                binding.recyclerView.layoutManager = LinearLayoutManager(context)
-                binding.recyclerView.adapter = adapter
             }
-        })
 
-        binding.clearGamesButton.setOnClickListener {
-            viewModel.clearSavedGames()
+            clearGamesButton.setOnClickListener {
+                viewModel.clearSavedGames()
+            }
         }
     }
 

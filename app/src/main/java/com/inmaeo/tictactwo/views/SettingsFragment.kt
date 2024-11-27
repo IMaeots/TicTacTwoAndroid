@@ -8,10 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.inmaeo.tictactwo.R
 import com.inmaeo.tictactwo.TicTacTwoApp.Companion.MUSIC
 import com.inmaeo.tictactwo.TicTacTwoApp.Companion.SETTINGS
 import com.inmaeo.tictactwo.databinding.FragmentSettingsBinding
-import com.inmaeo.tictactwo.domain.BackgroundMusicManager
+import com.inmaeo.tictactwo.service.BackgroundMusicManager
 
 class SettingsFragment : Fragment()  {
     private var _binding: FragmentSettingsBinding? = null
@@ -43,18 +44,18 @@ class SettingsFragment : Fragment()  {
     }
 
     private fun applySettings(sharedPreferences: SharedPreferences) {
-        with(sharedPreferences.edit()) {
-            putBoolean(MUSIC, isMusicEnabled)
-            apply()
-        }
-
         if (isMusicEnabled) {
             BackgroundMusicManager.startMusic(requireContext())
         } else {
             BackgroundMusicManager.stopMusic()
         }
 
-        Toast.makeText(requireContext(), "Settings saved!", Toast.LENGTH_SHORT).show()
+        with(sharedPreferences.edit()) {
+            putBoolean(MUSIC, isMusicEnabled)
+            apply()
+        }
+
+        Toast.makeText(requireContext(), getString(R.string.settings_popup_saved), Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

@@ -60,7 +60,7 @@
         android:id="@+id/resetStatsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/reset_stats_button_text"
+        android:text="@string/stats_action_reset"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@android:color/white"
         android:layout_marginHorizontal="@dimen/default_horizontal_padding"

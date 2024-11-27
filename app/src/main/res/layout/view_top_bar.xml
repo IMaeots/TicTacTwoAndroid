@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/top_bar_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
     android:paddingHorizontal="0dp"
-    app:contentInsetStart="0dp"
     android:paddingTop="@dimen/content_area_top_padding"
     android:paddingBottom="@dimen/content_padding">
 
@@ -24,17 +22,17 @@
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_settings"
             android:padding="8dp"
-            android:contentDescription="@string/settings_desc"
+            android:contentDescription="@string/settings_description"
             android:layout_marginEnd="@dimen/default_horizontal_padding" />
 
         <ImageButton
             android:id="@+id/onboardingButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="@dimen/top_bar_item_length"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_app_logo_foreground"
             android:layout_weight="1"
-            android:contentDescription="@string/onboarding_logo_desc"
+            android:contentDescription="@string/onboarding_logo_description"
             android:layout_marginEnd="@dimen/default_horizontal_padding" />
 
         <ImageButton
@@ -44,7 +42,7 @@
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_stats"
             android:padding="8dp"
-            android:contentDescription="@string/stats_desc" />
+            android:contentDescription="@string/stats_description" />
 
     </LinearLayout>
 

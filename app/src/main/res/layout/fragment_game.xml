@@ -14,7 +14,7 @@
         android:textAppearance="@style/TextAppearance.App.ExtraBold.Normal"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/gridLayoutContainer"
-        tools:text="@string/start_new_game_button_text"/>
+        tools:text="@string/game_action_start_new"/>
 
     <com.inmaeo.tictactwo.views.components.SwipeDetectingGridLayout
         android:id="@+id/gridLayoutContainer"
@@ -31,7 +31,7 @@
         android:id="@+id/actionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/reset_button_text"
+        android:text="@string/game_action_reset"
         android:layout_margin="@dimen/content_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

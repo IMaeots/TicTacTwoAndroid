@@ -1,4 +1,4 @@
-package com.inmaeo.tictactwo.domain
+package com.inmaeo.tictactwo.service
 
 import android.content.Context
 import android.media.MediaPlayer

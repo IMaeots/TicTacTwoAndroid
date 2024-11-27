@@ -8,7 +8,7 @@ import com.inmaeo.tictactwo.R
 import com.inmaeo.tictactwo.domain.GamePiece
 import com.inmaeo.tictactwo.domain.getTextByPiece
 
-class CustomButton @JvmOverloads constructor(
+class TicTacTwoButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : androidx.appcompat.widget.AppCompatButton(context, attrs) {
 

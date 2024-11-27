@@ -23,13 +23,9 @@ class GameViewModel(
 
     fun initializeGame(gameName: String?) {
         if (hasGameBeenInitialized) return
-
-        if (gameName != null) {
-            loadGame(gameName)
-        } else {
-            startNewBasicGame()
-        }
         hasGameBeenInitialized = true
+
+        if (gameName != null) loadGame(gameName) else startNewBasicGame()
     }
 
     fun resetGame()  {
@@ -55,80 +51,59 @@ class GameViewModel(
         val currentState = _gameState.first()
 
         val selectedMarker = currentState.selectedMarker
-        if (getGamePiece(currentState, row, col) != GamePiece.Empty) {
-            selectMarker(currentState, xPosition = col, yPosition = row)
-        } else if (selectedMarker != null) {
-            onGameBoardAction(
-                action = GameBoardAction.MoveMarker(
-                    oldX = selectedMarker.x, oldY = selectedMarker.y, newX = col, newY = row
-                )
-            )
-        } else {
-            onGameBoardAction(action = GameBoardAction.PlaceMarker(x = col, y = row))
+        val currentPiece = getGamePiece(currentState, row, col)
+
+        when {
+            currentPiece != GamePiece.Empty -> selectMarker(currentState, xPosition = col, yPosition = row)
+            selectedMarker != null -> onGameBoardAction(GameBoardAction.MoveMarker(selectedMarker.x, selectedMarker.y, col, row))
+            else -> onGameBoardAction(GameBoardAction.PlaceMarker(col, row))
         }
     }
 
     fun onGameBoardAction(action: GameBoardAction) = viewModelScope.launch {
         val currentState = _gameState.first()
-
         if (currentState.gameOutcome != GameOutcome.None) return@launch
 
-        var updatedState: GameState? = null
-        when (action) {
-            is GameBoardAction.PlaceMarker -> {
-                if (gameLogic.canPlaceMarker(currentState)) {
-                    updatedState = gameLogic.placeMarker(currentState, action.x, action.y)
-                } else {
-                    _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
-                    return@launch
-                }
-            }
-            is GameBoardAction.MoveMarker -> {
-                if (gameLogic.canMoveThatMarker(currentState, action.oldX, action.oldY)) {
-                    updatedState = gameLogic.moveMarker(
-                        currentState,
-                        action.oldX,
-                        action.oldY,
-                        action.newX,
-                        action.newY
-                    )
-                } else {
-                    _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
-                }
-            }
-            is GameBoardAction.MoveGrid -> {
-                if (gameLogic.canMoveGrid(currentState)) {
-                    updatedState = gameLogic.moveGrid(currentState, action.direction)
-                } else {
-                    _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
-                }
-            }
+        val updatedState: GameState? = when (action) {
+            is GameBoardAction.PlaceMarker -> if (gameLogic.canPlaceMarker(currentState)) {
+                    gameLogic.placeMarker(currentState, action.x, action.y)
+                } else null
+            is GameBoardAction.MoveMarker -> if (gameLogic.canMoveThatMarker(currentState, action.oldX, action.oldY)) {
+                    gameLogic.moveMarker(currentState, action.oldX, action.oldY, action.newX, action.newY)
+                } else null
+            is GameBoardAction.MoveGrid -> if (gameLogic.canMoveGrid(currentState)) {
+                    gameLogic.moveGrid(currentState, action.direction)
+                } else null
         }
+
         if (updatedState != null) {
-            val gameOutcome = gameLogic.checkForGameEnd(updatedState)
-            _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
+            emitUpdatedState(updatedState.copy(gameOutcome = gameLogic.checkForGameEnd(updatedState)))
         } else {
-            _gameState.emit(currentState.copy(error = GameStateError.InvalidMove))
+            emitErrorState(currentState, GameStateError.InvalidMove)
         }
     }
 
     private fun selectMarker(currentState: GameState, xPosition: Int, yPosition: Int) = viewModelScope.launch {
-        if (!gameLogic.canMoveThatMarker(currentState, xPosition, yPosition)) {
-            _gameState.emit(currentState.copy(error = GameStateError.UnknownError))
+        if (gameLogic.canMoveThatMarker(currentState, xPosition, yPosition)) {
+            emitUpdatedState(currentState.copy(selectedMarker = LocationCoordinates(xPosition, yPosition)))
         } else {
-            _gameState.emit(currentState.copy(
-                selectedMarker = LocationCoordinates(xPosition, yPosition)
-            ))
+            emitErrorState(currentState)
         }
     }
 
+    private fun emitUpdatedState(updatedState: GameState) = viewModelScope.launch {
+        val gameOutcome = gameLogic.checkForGameEnd(updatedState)
+        _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
+    }
+
+    private fun emitErrorState(currentState: GameState, error: GameStateError = GameStateError.UnknownError) =
+        viewModelScope.launch {
+            _gameState.emit(currentState.copy(error = error))
+        }
+
     private fun loadGame(gameName: String) = viewModelScope.launch {
         val savedGame = gameRepository.loadGameState(gameName)
-        if (savedGame != null) {
-            _gameState.emit(savedGame)
-        } else {
-            startNewBasicGame()
-        }
+        if (savedGame != null) _gameState.emit(savedGame) else startNewBasicGame()
     }
 
     private fun startNewBasicGame() = viewModelScope.launch {
