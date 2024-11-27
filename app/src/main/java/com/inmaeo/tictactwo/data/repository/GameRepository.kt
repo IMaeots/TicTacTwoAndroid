@@ -6,7 +6,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.inmaeo.tictactwo.data.db.GameDbHelper
 import com.inmaeo.tictactwo.domain.GameConfiguration
-import com.inmaeo.tictactwo.domain.GameState
+import com.inmaeo.tictactwo.domain.gamestate.GameState
 
 class GameRepository(
     private val dbHelper: GameDbHelper
@@ -123,4 +123,3 @@ sealed interface SaveGameResult {
     data object Success : SaveGameResult
     data class Failure(val message: String) : SaveGameResult
 }
-

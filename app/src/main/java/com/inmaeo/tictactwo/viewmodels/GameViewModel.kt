@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.inmaeo.tictactwo.data.repository.GameRepository
 import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.domain.*
+import com.inmaeo.tictactwo.domain.gamestate.GameOutcome
+import com.inmaeo.tictactwo.domain.gamestate.GameState
+import com.inmaeo.tictactwo.domain.gamestate.GameStateError
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
@@ -17,7 +20,7 @@ class GameViewModel(
     private val _gameState = MutableSharedFlow<GameState>(replay = 1)
     val gameState = _gameState.asSharedFlow()
 
-    private val gameLogic = GameLogic()
+    private val gameBrain = GameBrain()
     private val gameConfig = gameRepository.getGameConfiguration()
     private var hasGameBeenInitialized = false
 
@@ -30,7 +33,7 @@ class GameViewModel(
 
     fun resetGame()  {
         viewModelScope.launch {
-            val initialGameState = gameLogic.resetGame(gameState.first())
+            val initialGameState = gameBrain.resetGame(gameState.first())
             _gameState.emit(initialGameState)
         }
     }
@@ -42,10 +45,10 @@ class GameViewModel(
         gameState.gameBoard[col][row]
 
     fun isButtonPartOfGrid(gameState: GameState, row: Int, col: Int): Boolean =
-        gameLogic.isButtonPartOfGrid(gameState, currentX = col, currentY = row)
+        gameBrain.isButtonPartOfGrid(gameState, currentX = col, currentY = row)
 
     fun isGamePieceSelected(gameState: GameState, row: Int, col: Int): Boolean =
-        gameLogic.isGamePieceSelected(gameState, currentX = col, currentY = row)
+        gameBrain.isGamePieceSelected(gameState, currentX = col, currentY = row)
 
     fun handleGameButtonClick(row: Int, col: Int) = viewModelScope.launch {
         val currentState = _gameState.first()
@@ -65,26 +68,26 @@ class GameViewModel(
         if (currentState.gameOutcome != GameOutcome.None) return@launch
 
         val updatedState: GameState? = when (action) {
-            is GameBoardAction.PlaceMarker -> if (gameLogic.canPlaceMarker(currentState)) {
-                    gameLogic.placeMarker(currentState, action.x, action.y)
+            is GameBoardAction.PlaceMarker -> if (gameBrain.canPlaceMarker(currentState)) {
+                    gameBrain.placeMarker(currentState, action.x, action.y)
                 } else null
-            is GameBoardAction.MoveMarker -> if (gameLogic.canMoveThatMarker(currentState, action.oldX, action.oldY)) {
-                    gameLogic.moveMarker(currentState, action.oldX, action.oldY, action.newX, action.newY)
+            is GameBoardAction.MoveMarker -> if (gameBrain.canMoveThatMarker(currentState, action.oldX, action.oldY)) {
+                    gameBrain.moveMarker(currentState, action.oldX, action.oldY, action.newX, action.newY)
                 } else null
-            is GameBoardAction.MoveGrid -> if (gameLogic.canMoveGrid(currentState)) {
-                    gameLogic.moveGrid(currentState, action.direction)
+            is GameBoardAction.MoveGrid -> if (gameBrain.canMoveGrid(currentState)) {
+                    gameBrain.moveGrid(currentState, action.direction)
                 } else null
         }
 
         if (updatedState != null) {
-            emitUpdatedState(updatedState.copy(gameOutcome = gameLogic.checkForGameEnd(updatedState)))
+            emitUpdatedState(updatedState.copy(gameOutcome = gameBrain.checkForGameEnd(updatedState)))
         } else {
             emitErrorState(currentState, GameStateError.InvalidMove)
         }
     }
 
     private fun selectMarker(currentState: GameState, xPosition: Int, yPosition: Int) = viewModelScope.launch {
-        if (gameLogic.canMoveThatMarker(currentState, xPosition, yPosition)) {
+        if (gameBrain.canMoveThatMarker(currentState, xPosition, yPosition)) {
             emitUpdatedState(currentState.copy(selectedMarker = LocationCoordinates(xPosition, yPosition)))
         } else {
             emitErrorState(currentState)
@@ -92,7 +95,7 @@ class GameViewModel(
     }
 
     private fun emitUpdatedState(updatedState: GameState) = viewModelScope.launch {
-        val gameOutcome = gameLogic.checkForGameEnd(updatedState)
+        val gameOutcome = gameBrain.checkForGameEnd(updatedState)
         _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
     }
 

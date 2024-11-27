@@ -1,22 +1,8 @@
-package com.inmaeo.tictactwo.domain
+package com.inmaeo.tictactwo.domain.gamestate
 
-enum class GamePiece {
-    Empty, Player1, Player2
-}
-
-fun GamePiece.getTextByPiece(): String = when(this) {
-    GamePiece.Empty -> ""
-    GamePiece.Player1 -> "X"
-    GamePiece.Player2 -> "O"
-}
-
-data class GameConfiguration(
-    val boardSize: Int,
-    val gridSize: Int,
-    val winCondition: Int,
-    val numberOfMarkers: Int,
-    val name: String
-)
+import com.inmaeo.tictactwo.domain.GameConfiguration
+import com.inmaeo.tictactwo.domain.GamePiece
+import com.inmaeo.tictactwo.domain.LocationCoordinates
 
 data class GameState(
     val gameConfiguration: GameConfiguration,
@@ -38,8 +24,3 @@ sealed interface GameStateError {
     data object UnknownError : GameStateError
     data object InvalidMove : GameStateError
 }
-
-data class LocationCoordinates(
-    val x: Int,
-    val y: Int
-)

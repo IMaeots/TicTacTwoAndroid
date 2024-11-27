@@ -22,8 +22,8 @@ import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT2
 import com.inmaeo.tictactwo.TicTacTwoApp.Companion.STAT3
 import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.databinding.FragmentGameBinding
-import com.inmaeo.tictactwo.domain.GameOutcome
-import com.inmaeo.tictactwo.domain.GameState
+import com.inmaeo.tictactwo.domain.gamestate.GameOutcome
+import com.inmaeo.tictactwo.domain.gamestate.GameState
 import com.inmaeo.tictactwo.viewmodels.GameBoardAction
 import com.inmaeo.tictactwo.viewmodels.GameViewModel
 import com.inmaeo.tictactwo.viewmodels.GameViewModelFactory

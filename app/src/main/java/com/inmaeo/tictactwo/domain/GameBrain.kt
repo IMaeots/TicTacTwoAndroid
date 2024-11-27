@@ -1,23 +1,26 @@
 package com.inmaeo.tictactwo.domain
 
+import com.inmaeo.tictactwo.domain.gamestate.GameOutcome
+import com.inmaeo.tictactwo.domain.gamestate.GameState
+import com.inmaeo.tictactwo.domain.gamestate.checkGameOutcome
 import com.inmaeo.tictactwo.viewmodels.MoveGridDirection
 
-class GameLogic {
+class GameBrain {
 
-    fun checkForGameEnd(gameState: GameState) = GameOutcomeChecker(gameState).checkGameOutcome()
+    fun checkForGameEnd(gameState: GameState) = gameState.checkGameOutcome()
 
     fun canPlaceMarker(gameState: GameState): Boolean {
+        val maxMarkers = gameState.gameConfiguration.numberOfMarkers
         return when (gameState.nextMoveBy) {
-            GamePiece.Player1 -> gameState.player1MarkersPlaced < gameState.gameConfiguration.numberOfMarkers
-            GamePiece.Player2 -> gameState.player2MarkersPlaced < gameState.gameConfiguration.numberOfMarkers
+            GamePiece.Player1 -> gameState.player1MarkersPlaced < maxMarkers
+            GamePiece.Player2 -> gameState.player2MarkersPlaced < maxMarkers
             else -> false
         }
     }
 
     fun placeMarker(gameState: GameState, x: Int, y: Int): GameState? {
         val newBoard = gameState.gameBoard.map { it.toMutableList() }
-        if (x < 0 || y < 0 || x >= gameState.gameConfiguration.boardSize || y >= gameState.gameConfiguration.boardSize ||
-            newBoard[x][y] != GamePiece.Empty) {
+        if (!isValidCoordinate(x, y, gameState.gameConfiguration.boardSize) || newBoard[x][y] != GamePiece.Empty) {
             return null
         }
         newBoard[x][y] = gameState.nextMoveBy
@@ -36,19 +39,15 @@ class GameLogic {
     }
 
     fun moveMarker(gameState: GameState, oldX: Int, oldY: Int, newX: Int, newY: Int): GameState? {
-        if (oldX < 0 || oldY < 0 || newX < 0 || newY < 0 ||
-            oldX >= gameState.gameConfiguration.boardSize || oldY >= gameState.gameConfiguration.boardSize ||
-            newX >= gameState.gameConfiguration.boardSize || newY >= gameState.gameConfiguration.boardSize ||
-            gameState.gameBoard[oldX][oldY] != gameState.nextMoveBy || gameState.gameBoard[newX][newY] != GamePiece.Empty) {
+        if (!isValidCoordinate(oldX, oldY, gameState.gameConfiguration.boardSize) ||
+            !isValidCoordinate(newX, newY, gameState.gameConfiguration.boardSize) ||
+            gameState.gameBoard[oldX][oldY] != gameState.nextMoveBy || gameState.gameBoard[newX][newY] != GamePiece.Empty
+        ) {
             return null
         }
 
-        val newBoard = gameState.gameBoard.map { it.toMutableList() }
-        newBoard[oldX][oldY] = GamePiece.Empty
-        newBoard[newX][newY] = gameState.nextMoveBy
-
-        return gameState.copy(
-            gameBoard = newBoard,
+        val updatedState = updateBoard(gameState, oldX, oldY, newX, newY)
+        return updatedState?.copy(
             nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1,
             moveCount = gameState.moveCount + 1,
             selectedMarker = null
@@ -110,5 +109,20 @@ class GameLogic {
             player2MarkersPlaced = 0,
             moveCount = 0
         )
+    }
+
+    private fun isValidCoordinate(x: Int, y: Int, boardSize: Int): Boolean {
+        return x in 0 until boardSize && y in 0 until boardSize
+    }
+
+    private fun updateBoard(gameState: GameState, oldX: Int, oldY: Int, newX: Int, newY: Int): GameState? {
+        if (!isValidCoordinate(newX, newY, gameState.gameConfiguration.boardSize)) return null
+        val newBoard = gameState.gameBoard.map { it.toMutableList() }
+        if (oldX >= 0 && oldY >= 0) {
+            newBoard[oldX][oldY] = GamePiece.Empty
+        }
+        newBoard[newX][newY] = gameState.nextMoveBy
+
+        return gameState.copy(gameBoard = newBoard)
     }
 }
