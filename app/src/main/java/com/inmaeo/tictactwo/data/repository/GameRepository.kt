@@ -19,17 +19,19 @@ class GameRepository(
             boardSize = 5,
             gridSize = 3,
             winCondition = 3,
-            numberOfMarkers = 5,
+            numberOfMarkers = 6,
             name = "TicTacTwo"
         )
     }
 
     fun saveGameState(gameName: String, gameState: GameState): SaveGameResult {
+        val cleanGameState = gameState.copy(error = null)
+        
         if (checkIfGameNameExists(gameName)) return SaveGameResult.Failure("Game with the same name already exists.")
 
         val db = dbHelper.writableDatabase
         return try {
-            val jsonGameState = gson.toJson(gameState)
+            val jsonGameState = gson.toJson(cleanGameState)
             val values = ContentValues().apply {
                 put(GameDbHelper.COLUMN_GAME_NAME, gameName)
                 put(GameDbHelper.COLUMN_GAME_STATE, jsonGameState)
@@ -39,7 +41,8 @@ class GameRepository(
 
             if (result != -1L) SaveGameResult.Success else SaveGameResult.Failure("Failed to save game state.")
         } catch (e: Exception) {
-            SaveGameResult.Failure("Error occurred: ${e.message}")
+            Log.e("GameRepository", "Error saving game: ${e.message}")
+            SaveGameResult.Failure("Error occurred while saving")
         } finally {
             db.close()
         }
@@ -47,75 +50,97 @@ class GameRepository(
 
     private fun checkIfGameNameExists(gameName: String): Boolean {
         val db = dbHelper.readableDatabase
-        val cursor = db.query(
-            GameDbHelper.TABLE_NAME,
-            arrayOf(GameDbHelper.COLUMN_GAME_NAME),
-            "${GameDbHelper.COLUMN_GAME_NAME} = ?",
-            arrayOf(gameName),
-            null, null, null, "1"
-        )
-        val result = cursor.count > 0
-
-        cursor.close()
-        db.close()
-        return result
+        return try {
+            db.query(
+                GameDbHelper.TABLE_NAME,
+                arrayOf(GameDbHelper.COLUMN_GAME_NAME),
+                "${GameDbHelper.COLUMN_GAME_NAME} = ?",
+                arrayOf(gameName),
+                null, null, null, "1"
+            ).use { cursor ->
+                cursor.count > 0
+            }
+        } catch (e: Exception) {
+            Log.e("GameRepository", "Error checking game name: ${e.message}")
+            false
+        } finally {
+            db.close()
+        }
     }
 
     fun loadGameState(gameName: String): GameState? {
         val db = dbHelper.readableDatabase
-        val cursor = db.query(
-            GameDbHelper.TABLE_NAME,
-            arrayOf(GameDbHelper.COLUMN_GAME_STATE),
-            "${GameDbHelper.COLUMN_GAME_NAME} = ?",
-            arrayOf(gameName),
-            null, null, null
-        )
+        try {
+            val cursor = db.query(
+                GameDbHelper.TABLE_NAME,
+                arrayOf(GameDbHelper.COLUMN_GAME_STATE),
+                "${GameDbHelper.COLUMN_GAME_NAME} = ?",
+                arrayOf(gameName),
+                null, null, null
+            )
 
-        return cursor.use { c ->
-            if (c.moveToFirst()) {
-                val columnIndex = cursor.getColumnIndex(GameDbHelper.COLUMN_GAME_STATE)
-                if (columnIndex != -1) {
-                    val gameStateJson = cursor.getString(columnIndex)
-                    gson.fromJson(gameStateJson, GameState::class.java)
+            return cursor.use { c ->
+                if (c.moveToFirst()) {
+                    val columnIndex = c.getColumnIndex(GameDbHelper.COLUMN_GAME_STATE)
+                    if (columnIndex != -1) {
+                        try {
+                            val gameStateJson = c.getString(columnIndex)
+                            gson.fromJson(gameStateJson, GameState::class.java)
+                        } catch (e: Exception) {
+                            Log.e("GameRepository", "Error parsing game state: ${e.message}")
+                            null
+                        }
+                    } else {
+                        Log.e("GameRepository", "Column does not exist in query result")
+                        null
+                    }
                 } else {
-                    Log.e("DatabaseError", "${GameDbHelper.COLUMN_GAME_STATE} does not exist in the query result")
                     null
                 }
-            } else {
-                null
             }
+        } catch (e: Exception) {
+            Log.e("GameRepository", "Error loading game: ${e.message}")
+            return null
+        } finally {
+            db.close()
         }
     }
 
     fun getSavedGameNames(): List<String> {
         val db = dbHelper.readableDatabase
         val gameNames = mutableListOf<String>()
-        val cursor = db.query(
-            GameDbHelper.TABLE_NAME,
-            arrayOf(GameDbHelper.COLUMN_GAME_NAME),
-            null, null, null, null, null
-        )
-
-        cursor.use { c ->
-            val columnIndex = c.getColumnIndex(GameDbHelper.COLUMN_GAME_NAME)
-            if (columnIndex != -1) {
-                while (c.moveToNext()) {
-                    val gameName = c.getString(columnIndex)
-                    gameNames.add(gameName)
+        
+        try {
+            db.query(
+                GameDbHelper.TABLE_NAME,
+                arrayOf(GameDbHelper.COLUMN_GAME_NAME),
+                null, null, null, null, null
+            ).use { cursor ->
+                val columnIndex = cursor.getColumnIndex(GameDbHelper.COLUMN_GAME_NAME)
+                if (columnIndex != -1) {
+                    while (cursor.moveToNext()) {
+                        gameNames.add(cursor.getString(columnIndex))
+                    }
                 }
-            } else {
-                Log.e("DatabaseError", "Column ${GameDbHelper.COLUMN_GAME_NAME} does not exist in the query result")
             }
+        } catch (e: Exception) {
+            Log.e("GameRepository", "Error getting saved games: ${e.message}")
+        } finally {
+            db.close()
         }
-
-        db.close()
+        
         return gameNames
     }
 
     fun clearSavedGames() {
         val db = dbHelper.writableDatabase
-        db.execSQL("DELETE FROM ${GameDbHelper.TABLE_NAME}")
-        db.close()
+        try {
+            db.execSQL("DELETE FROM ${GameDbHelper.TABLE_NAME}")
+        } catch (e: Exception) {
+            Log.e("GameRepository", "Error clearing saved games: ${e.message}")
+        } finally {
+            db.close()
+        }
     }
 }
 

@@ -11,14 +11,18 @@ class GameBrain {
 
     fun canPlaceMarker(gameState: GameState): Boolean {
         val maxMarkers = gameState.gameConfiguration.numberOfMarkers
-        return when (gameState.nextMoveBy) {
+        val hasMarkersLeft = when (gameState.nextMoveBy) {
             GamePiece.Player1 -> gameState.player1MarkersPlaced < maxMarkers
             GamePiece.Player2 -> gameState.player2MarkersPlaced < maxMarkers
             else -> false
         }
+        
+        return hasMarkersLeft
     }
 
     fun placeMarker(gameState: GameState, x: Int, y: Int): GameState? {
+        if (!isButtonPartOfGrid(gameState, x, y)) return null
+        
         val newBoard = gameState.gameBoard.map { it.toMutableList() }
         if (!isValidCoordinate(x, y, gameState.gameConfiguration.boardSize) || newBoard[x][y] != GamePiece.Empty) {
             return null
@@ -35,10 +39,15 @@ class GameBrain {
     }
 
     fun canMoveThatMarker(gameState: GameState, currentX: Int, currentY: Int): Boolean {
+        if (gameState.player1MarkersPlaced < 3 || gameState.player2MarkersPlaced < 3) return false
+        if (!isButtonPartOfGrid(gameState, currentX, currentY)) return false
+        
         return gameState.gameBoard[currentX][currentY] == gameState.nextMoveBy
     }
 
     fun moveMarker(gameState: GameState, oldX: Int, oldY: Int, newX: Int, newY: Int): GameState? {
+        if (!isButtonPartOfGrid(gameState, oldX, oldY) || !isButtonPartOfGrid(gameState, newX, newY)) return null
+        
         if (!isValidCoordinate(oldX, oldY, gameState.gameConfiguration.boardSize) ||
             !isValidCoordinate(newX, newY, gameState.gameConfiguration.boardSize) ||
             gameState.gameBoard[oldX][oldY] != gameState.nextMoveBy || gameState.gameBoard[newX][newY] != GamePiece.Empty
@@ -55,6 +64,8 @@ class GameBrain {
     }
 
     fun canMoveGrid(gameState: GameState): Boolean {
+        if (gameState.player1MarkersPlaced < 3 || gameState.player2MarkersPlaced < 3) return false
+        
         return gameState.gridMainCorner.x >= 0 && gameState.gridMainCorner.y >= 0 &&
                 gameState.gridMainCorner.x + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize &&
                 gameState.gridMainCorner.y + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize
