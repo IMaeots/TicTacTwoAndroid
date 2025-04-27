@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/gameStatusTextView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:paddingVertical="@dimen/content_padding"
@@ -16,7 +16,9 @@
         android:background="@color/colorBackground"
         android:elevation="@dimen/elevation_default"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/gridCardView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/gridCardView"
+        app:layout_constraintWidth_percent="0.3"
         tools:text="@string/game_action_start_new"/>
 
     <androidx.cardview.widget.CardView
@@ -24,10 +26,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         style="@style/CardView.Game"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="0dp"
+        app:layout_constraintStart_toEndOf="@id/gameStatusTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/gameStatusTextView"
-        app:layout_constraintBottom_toTopOf="@id/actionButton">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <com.inmaeo.tictactwo.views.components.SwipeDetectingGridLayout
             android:id="@+id/gridLayoutContainer"
@@ -39,13 +42,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/actionButton"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/Button.App"
         android:text="@string/game_action_reset"
-        android:layout_marginBottom="@dimen/content_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toStartOf="@id/gridCardView"
+        app:layout_constraintWidth_percent="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

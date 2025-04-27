@@ -13,58 +13,50 @@
         android:src="@drawable/ic_app_logo_foreground"
         app:tint="@color/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/onboardingTitle"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65" />
 
     <TextView
         android:id="@+id/onboardingTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:layout_marginTop="@dimen/content_area_top_padding"
         android:layout_marginHorizontal="@dimen/default_horizontal_padding"
-        android:layout_marginBottom="@dimen/content_area_bottom_padding"
         android:textAppearance="@style/TextAppearance.App.ExtraBold.Normal"
         android:text="@string/onboarding_title"
-        app:layout_constraintTop_toBottomOf="@id/onboardingImage"
+        app:layout_constraintTop_toBottomOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/newGameButton"/>
+        app:layout_constraintBottom_toTopOf="@id/newGameButton"
+        android:layout_marginBottom="@dimen/content_padding"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/newGameButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/game_action_start_new"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@android:color/white"
-        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
-        app:layout_constraintTop_toBottomOf="@id/onboardingTitle"
+        style="@style/Button.App"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/savedGamesButton"/>
+        app:layout_constraintBottom_toTopOf="@id/savedGamesButton"
+        android:layout_marginBottom="8dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/savedGamesButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/saved_games_title"
-        android:backgroundTint="@color/colorPrimaryVariant"
-        android:textColor="@android:color/white"
-        android:layout_marginVertical="@dimen/default_item_padding"
-        android:layout_marginHorizontal="@dimen/default_horizontal_padding"
-        app:layout_constraintTop_toBottomOf="@id/newGameButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomSpace"/>
-
-    <Space
-        android:id="@+id/bottomSpace"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/content_area_bottom_padding"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        style="@style/Button.App"
+        app:backgroundTint="@color/colorPrimaryVariant"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/content_area_bottom_padding"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,14 +31,13 @@
         tools:itemCount="10"
         tools:listitem="@layout/item_saved_game"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/clearGamesButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/saved_games_action_clear"
-        android:backgroundTint="@color/colorPrimaryVariant"
-        android:textColor="@android:color/white"
-        android:layout_margin="@dimen/content_padding"
+        style="@style/Button.App"
+        app:backgroundTint="@color/colorPrimaryVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

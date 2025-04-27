@@ -4,6 +4,20 @@
     <color name="colorPrimaryVariant">#005BB5</color>
     <color name="colorSurface">#F5F5F5</color>
     <color name="colorSecondary">#64D8CB</color>
+    <color name="colorSecondaryVariant">#00867D</color>
     <color name="colorBackground">#FAFAFA</color>
     <color name="textOnSurface">#4A4A4A</color>
+    <color name="activeGridColor">#CCE5FF</color>
+    <color name="selectedCellColor">#E0F7F5</color>
+    
+    <color name="player1BackgroundColor">#304A90E2</color>
+    <color name="player2BackgroundColor">#3064D8CB</color>
+    <color name="inactivePlayer1BackgroundColor">#664A90E2</color>
+    <color name="inactivePlayer2BackgroundColor">#6664D8CB</color>
+    
+    <color name="borderColor">#BBBBBB</color>
+    <color name="shadowColor">#20000000</color>
+    
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

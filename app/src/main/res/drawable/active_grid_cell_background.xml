@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/corner_radius" />
+            <solid android:color="@color/shadowColor" />
+            <padding android:bottom="@dimen/border_width" />
+        </shape>
+    </item>
+    <item>
+        <ripple android:color="?attr/colorControlHighlight">
+            <item android:id="@android:id/mask">
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/corner_radius" />
+                    <solid android:color="@color/white" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/corner_radius" />
+                    <solid android:color="@color/activeGridColor" />
+                    <stroke android:width="2.5dp" android:color="?attr/colorPrimary" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+</layer-list> 

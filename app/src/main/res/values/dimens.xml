@@ -6,4 +6,19 @@
     <dimen name="content_padding">16dp</dimen>
     <dimen name="top_bar_item_length">48dp</dimen>
     <dimen name="default_item_padding">8dp</dimen>
+    <dimen name="onboarding_button_gap">14dp</dimen>
+    
+    <dimen name="game_button_width">64dp</dimen>
+    <dimen name="game_button_height">64dp</dimen>
+    <dimen name="game_button_margin">4dp</dimen>
+    
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    
+    <dimen name="game_marker_text_size">24sp</dimen>
+    
+    <dimen name="border_width">1dp</dimen>
+    <dimen name="border_width_selected">2dp</dimen>
+    <dimen name="corner_radius">8dp</dimen>
+    <dimen name="elevation_default">2dp</dimen>
 </resources>

@@ -4,6 +4,9 @@
     <color name="colorPrimaryVariant">#002D62</color>
     <color name="colorSurface">#2C2C2C</color>
     <color name="colorSecondary">#1CDEC9</color>
+    <color name="colorSecondaryVariant">#008E83</color>
     <color name="colorBackground">#1E1E1E</color>
     <color name="textOnSurface">#E0E0E0</color>
+    <color name="activeGridColor">#103C70</color>
+    <color name="selectedCellColor">#104840</color>
 </resources>

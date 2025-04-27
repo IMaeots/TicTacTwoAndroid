@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="GameButtonStyle">
-        <item name="android:layout_width">64dp</item>
-        <item name="android:layout_height">64dp</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_width">@dimen/game_button_width</item>
+        <item name="android:layout_height">@dimen/game_button_height</item>
+        <item name="android:layout_margin">@dimen/game_button_margin</item>
         <item name="android:layout_gravity">fill</item>
         <item name="android:textSize">14sp</item>
         <item name="android:background">@color/colorPrimary</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Button.App" parent="Widget.MaterialComponents.Button">
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/corner_radius</item>
+        <item name="elevation">@dimen/elevation_default</item>
+        <item name="android:layout_marginHorizontal">@dimen/default_horizontal_padding</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="rippleColor">@color/colorPrimaryVariant</item>
+    </style>
+
+    <style name="GameMarker">
+        <item name="android:textSize">@dimen/game_marker_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="GameMarker.Player1">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="GameMarker.Player2">
+        <item name="android:textColor">@color/colorSecondary</item>
+    </style>
+    
+    <style name="CardView.Game">
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="android:layout_marginHorizontal">@dimen/default_horizontal_padding</item>
+        <item name="android:layout_marginVertical">@dimen/content_padding</item>
     </style>
 </resources>
-

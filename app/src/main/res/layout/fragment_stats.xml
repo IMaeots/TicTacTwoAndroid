@@ -56,25 +56,17 @@
 
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/resetStatsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/stats_action_reset"
-        android:backgroundTint="@color/colorPrimary"
-        android:textColor="@android:color/white"
+        style="@style/Button.App"
         android:layout_marginHorizontal="@dimen/default_horizontal_padding"
         app:layout_constraintTop_toBottomOf="@id/settingsFrame"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomSpace" />
-
-    <Space
-        android:id="@+id/bottomSpace"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/content_area_bottom_padding"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/content_area_bottom_padding" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
