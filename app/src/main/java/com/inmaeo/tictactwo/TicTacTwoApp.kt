@@ -18,20 +18,4 @@ class TicTacTwoApp : Application() {
         const val STAT2 = "player2_wins"
         const val STAT3 = "draws"
     }
-
-    override fun onCreate() {
-        super.onCreate()
-
-        val sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE)
-        val isMusicEnabled = sharedPreferences.getBoolean(MUSIC, true)
-
-        if (isMusicEnabled) {
-            BackgroundMusicManager.startMusic(this)
-        }
-    }
-
-    override fun onTerminate() {
-        super.onTerminate()
-        BackgroundMusicManager.stopMusic()
-    }
 }
