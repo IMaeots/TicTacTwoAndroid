@@ -42,11 +42,8 @@ class GameFragment : Fragment() {
     private val sharedPreferences by lazy { requireContext().getSharedPreferences(SETTINGS, Context.MODE_PRIVATE) }
     private val gestureDetector by lazy { GestureDetector(context, SwipeGestureListener()) }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = FragmentGameBinding.inflate(inflater, container, false).apply { binding = this }.root
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        FragmentGameBinding.inflate(inflater, container, false).apply { binding = this }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val gameRepository = (requireActivity().application as TicTacTwoApp).gameRepository

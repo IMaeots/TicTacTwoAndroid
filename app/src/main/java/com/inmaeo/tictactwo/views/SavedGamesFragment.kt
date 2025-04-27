@@ -16,21 +16,14 @@ import com.inmaeo.tictactwo.views.components.SavedGamesAdapter
 
 class SavedGamesFragment : Fragment() {
 
-    private var _binding: FragmentSavedGamesBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentSavedGamesBinding
 
     private val viewModel: SavedGamesViewModel by viewModels {
         SavedGamesViewModelFactory((requireActivity().application as TicTacTwoApp).gameRepository)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSavedGamesBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        FragmentSavedGamesBinding.inflate(layoutInflater, container, false).apply { binding = this }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,10 +54,5 @@ class SavedGamesFragment : Fragment() {
     private fun navigateToGameFragment(gameName: String) {
         val action = SavedGamesFragmentDirections.actionSavedGamesFragmentToGameFragment(gameName)
         findNavController().navigate(action)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }
