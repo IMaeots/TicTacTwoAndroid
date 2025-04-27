@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.inmaeo.tictactwo.data.repository.GameRepository
 import com.inmaeo.tictactwo.data.repository.SaveGameResult
-import com.inmaeo.tictactwo.domain.*
+import com.inmaeo.tictactwo.domain.GameBrain
+import com.inmaeo.tictactwo.domain.GamePiece
+import com.inmaeo.tictactwo.domain.LocationCoordinates
 import com.inmaeo.tictactwo.domain.gamestate.GameOutcome
 import com.inmaeo.tictactwo.domain.gamestate.GameState
 import com.inmaeo.tictactwo.domain.gamestate.GameStateError
@@ -35,6 +37,12 @@ class GameViewModel(
         viewModelScope.launch {
             val initialGameState = gameBrain.resetGame(gameState.first())
             _gameState.emit(initialGameState)
+        }
+    }
+
+    fun clearError(currentState: GameState) {
+        viewModelScope.launch {
+            emitErrorState(currentState, null)
         }
     }
 
@@ -90,7 +98,7 @@ class GameViewModel(
         if (gameBrain.canMoveThatMarker(currentState, xPosition, yPosition)) {
             emitUpdatedState(currentState.copy(selectedMarker = LocationCoordinates(xPosition, yPosition)))
         } else {
-            emitErrorState(currentState)
+            emitErrorState(currentState, GameStateError.InvalidMove)
         }
     }
 
@@ -99,7 +107,7 @@ class GameViewModel(
         _gameState.emit(updatedState.copy(gameOutcome = gameOutcome))
     }
 
-    private fun emitErrorState(currentState: GameState, error: GameStateError = GameStateError.UnknownError) =
+    private fun emitErrorState(currentState: GameState, error: GameStateError? = GameStateError.UnknownError) =
         viewModelScope.launch {
             _gameState.emit(currentState.copy(error = error))
         }

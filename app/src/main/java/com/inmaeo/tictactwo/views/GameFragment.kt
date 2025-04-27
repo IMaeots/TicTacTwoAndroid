@@ -24,6 +24,7 @@ import com.inmaeo.tictactwo.data.repository.SaveGameResult
 import com.inmaeo.tictactwo.databinding.FragmentGameBinding
 import com.inmaeo.tictactwo.domain.gamestate.GameOutcome
 import com.inmaeo.tictactwo.domain.gamestate.GameState
+import com.inmaeo.tictactwo.domain.gamestate.GameStateError
 import com.inmaeo.tictactwo.viewmodels.GameBoardAction
 import com.inmaeo.tictactwo.viewmodels.GameViewModel
 import com.inmaeo.tictactwo.viewmodels.GameViewModelFactory
@@ -65,6 +66,19 @@ class GameFragment : Fragment() {
 
     private fun handleGameState(gameState: GameState) {
         drawBoard(gameState)
+        
+        when (gameState.error) {
+            is GameStateError.InvalidMove -> {
+                Toast.makeText(requireContext(), "Invalid move!", Toast.LENGTH_SHORT).show()
+                viewModel.clearError(gameState)
+            }
+            is GameStateError.UnknownError -> {
+                Toast.makeText(requireContext(), "Unknown error occurred", Toast.LENGTH_SHORT).show()
+                viewModel.clearError(gameState)
+            }
+            null -> {}
+        }
+        
         binding.apply {
             gameStatusTextView.text = getString(
                 when (gameState.gameOutcome) {
