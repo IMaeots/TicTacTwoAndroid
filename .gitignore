@@ -1,15 +1,29 @@
 *.iml
 .gradle
 /local.properties
+# IDE files
+.idea/
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/compiler.xml
+/.idea/gradle.xml
+/.idea/misc.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/runConfigurations.xml
+/.idea/other.xml
+# OS specific files
 .DS_Store
+# Build files
 /build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+# Kotlin compiler files
+/.kotlin/
