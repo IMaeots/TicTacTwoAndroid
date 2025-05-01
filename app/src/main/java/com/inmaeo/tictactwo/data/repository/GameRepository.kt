@@ -20,6 +20,7 @@ class GameRepository(
             gridSize = 3,
             winCondition = 3,
             numberOfMarkers = 6,
+            numberOfTotalMovesForSpecials = 6,
             name = "TicTacTwo"
         )
     }

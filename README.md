@@ -69,6 +69,15 @@ This pragmatic approach prioritizes simplicity and readability, making it suitab
 - Material Design components
 - Custom View components for game board elements
 
+## Screenshots
+
+![Game Screenshot](images/screenshot1.png)
+
+## Notes
+
+Yes, going to settings or stats loses your game progress.
+Yes, there are issues and code could use improvements.
+
 ## License
 
 [All Rights Reserved]

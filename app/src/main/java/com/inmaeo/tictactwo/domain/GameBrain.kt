@@ -39,7 +39,7 @@ class GameBrain {
     }
 
     fun canMoveThatMarker(gameState: GameState, currentX: Int, currentY: Int): Boolean {
-        if (gameState.player1MarkersPlaced < 3 || gameState.player2MarkersPlaced < 3) return false
+        if (gameState.moveCount < gameState.gameConfiguration.numberOfTotalMovesForSpecials) return false
         if (!isButtonPartOfGrid(gameState, currentX, currentY)) return false
         
         return gameState.gameBoard[currentX][currentY] == gameState.nextMoveBy
@@ -64,7 +64,7 @@ class GameBrain {
     }
 
     fun canMoveGrid(gameState: GameState): Boolean {
-        if (gameState.player1MarkersPlaced < 3 || gameState.player2MarkersPlaced < 3) return false
+        if (gameState.moveCount < gameState.gameConfiguration.numberOfTotalMovesForSpecials) return false
         
         return gameState.gridMainCorner.x >= 0 && gameState.gridMainCorner.y >= 0 &&
                 gameState.gridMainCorner.x + gameState.gameConfiguration.gridSize <= gameState.gameConfiguration.boardSize &&
@@ -88,6 +88,7 @@ class GameBrain {
         return gameState.copy(
             gridMainCorner = LocationCoordinates(gridX, gridY),
             nextMoveBy = if (gameState.nextMoveBy == GamePiece.Player1) GamePiece.Player2 else GamePiece.Player1,
+            selectedMarker = null,
             moveCount = gameState.moveCount + 1
         )
     }

@@ -5,5 +5,6 @@ data class GameConfiguration(
     val gridSize: Int,
     val winCondition: Int,
     val numberOfMarkers: Int,
+    val numberOfTotalMovesForSpecials: Int,
     val name: String
 )
